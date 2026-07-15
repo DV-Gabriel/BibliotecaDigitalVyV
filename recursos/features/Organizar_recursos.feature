@@ -1,17 +1,21 @@
-# Created by Javier at 9/7/2026
-# language: es
+﻿# language: es
 
-Característica: Organizar recursos en colecciones
+Característica: : Organizar recursos en colecciones personales (Crear colecciones de recursos/tableros)
   Como estudiante o docente
   Quiero organizar recursos educativos accesibles en colecciones personales
   Para personalizar mi espacio de aprendizaje y encontrar fácilmente los materiales que necesito
 
-  Antecedentes:
-    Dado que el usuario "Estudiante Luis" está autenticado en el sistema
+  Antecedentes: :
+    Dado que existen los siguientes usuarios: "Ana", "Luis" y "Marta"
+    Y el usuario "Luis" está autenticado en el sistema
+
+  # --- Creación de colecciones
 
   Escenario: Crear una colección personal para organizar recursos educativos
     Cuando el usuario crea una colección personal llamada "Biología"
     Entonces la colección "Biología" debe quedar disponible en su espacio personal de aprendizaje
+
+  # --- Agregar recursos a colecciones
 
   Escenario: Agregar un recurso público a una colección personal
     Dado que existe un recurso público llamado "Introducción a la fotosíntesis"
@@ -22,14 +26,14 @@ Característica: Organizar recursos en colecciones
 
   Escenario: Agregar a una colección personal un recurso compartido específicamente con el usuario
     Dado que existe un recurso privado llamado "Guía de laboratorio"
-    Y el propietario del recurso ha compartido "Guía de laboratorio" con "Estudiante Luis"
+    Y el propietario del recurso ha compartido "Guía de laboratorio" con "Luis"
     Y el usuario tiene una colección personal llamada "Laboratorio"
     Cuando el usuario agrega el recurso "Guía de laboratorio" a la colección "Laboratorio"
     Entonces el recurso debe quedar incluido en la colección "Laboratorio"
     Y el usuario debe poder ver el recurso dentro de esa colección
 
   Escenario: Agregar un recurso propio privado a una colección personal
-    Dado que "Estudiante Luis" es propietario de un recurso privado llamado "Apuntes de química"
+    Dado que "Luis" es propietario de un recurso privado llamado "Apuntes de química"
     Y el usuario tiene una colección personal llamada "Química"
     Cuando el usuario agrega el recurso "Apuntes de química" a la colección "Química"
     Entonces el recurso debe quedar incluido en la colección "Química"
@@ -37,20 +41,22 @@ Característica: Organizar recursos en colecciones
 
   Escenario: No permitir agregar a una colección un recurso privado sin acceso específico
     Dado que existe un recurso privado llamado "Material privado de física"
-    Y el recurso no pertenece a "Estudiante Luis"
-    Y el recurso no ha sido compartido con "Estudiante Luis"
+    Y el recurso no pertenece a "Luis"
+    Y el recurso no ha sido compartido con "Luis"
     Y el usuario tiene una colección personal llamada "Física"
     Cuando el usuario intenta agregar el recurso "Material privado de física" a la colección "Física"
     Entonces el sistema no debe permitir agregar el recurso a la colección
     Y el recurso no debe aparecer en la colección "Física"
 
+  # --- Integridad de datos y propiedad
+
   Escenario: Mantener la propiedad del recurso al agregarlo a una colección
     Dado que existe un recurso público llamado "Historia de la educación"
-    Y el propietario del recurso es "Docente Ana"
+    Y el propietario del recurso es "Ana"
     Y el usuario tiene una colección personal llamada "Historia"
     Cuando el usuario agrega el recurso "Historia de la educación" a la colección "Historia"
     Entonces el recurso debe quedar incluido en la colección "Historia"
-    Y el propietario del recurso debe seguir siendo "Docente Ana"
+    Y el propietario del recurso debe seguir siendo "Ana"
 
   Escenario: Mantener el autor del recurso al agregarlo a una colección
     Dado que existe un recurso público llamado "Ensayo sobre literatura clásica"
@@ -62,12 +68,14 @@ Característica: Organizar recursos en colecciones
 
   Escenario: Mantener la visibilidad original del recurso al agregarlo a una colección
     Dado que existe un recurso privado llamado "Plan de estudio personalizado"
-    Y el propietario del recurso ha compartido "Plan de estudio personalizado" con "Estudiante Luis"
+    Y el propietario del recurso ha compartido "Plan de estudio personalizado" con "Luis"
     Y el usuario tiene una colección personal llamada "Planificación"
     Cuando el usuario agrega el recurso "Plan de estudio personalizado" a la colección "Planificación"
     Entonces el recurso debe quedar incluido en la colección "Planificación"
     Y el recurso debe seguir siendo privado
     Y solo los usuarios con acceso permitido deben poder visualizarlo
+
+  # --- Reglas de organización
 
   Escenario: Organizar un mismo recurso accesible en más de una colección personal
     Dado que existe un recurso público llamado "Mapa conceptual de ecología"
@@ -84,6 +92,8 @@ Característica: Organizar recursos en colecciones
     Y el recurso "Resumen de anatomía" ya está incluido en la colección "Medicina"
     Cuando el usuario intenta agregar nuevamente el recurso "Resumen de anatomía" a la colección "Medicina"
     Entonces la colección "Medicina" debe contener una sola vez el recurso "Resumen de anatomía"
+
+  # --- Gestión y eliminación de recursos en colecciones
 
   Escenario: Quitar un recurso de una colección personal sin eliminar el recurso del sistema
     Dado que existe un recurso público llamado "Línea de tiempo histórica"
@@ -104,6 +114,8 @@ Característica: Organizar recursos en colecciones
     Y la categoría del recurso debe seguir siendo "Matemáticas"
     Y el recurso debe conservar la etiqueta "geometría"
 
+  # --- Visualización y acceso dinámico
+
   Escenario: Ver los recursos organizados dentro de una colección personal
     Dado que el usuario tiene una colección personal llamada "Ciencias"
     Y la colección "Ciencias" contiene el recurso público "Introducción a la biología"
@@ -114,27 +126,29 @@ Característica: Organizar recursos en colecciones
 
   Escenario: No mostrar en una colección un recurso privado cuyo acceso fue retirado al usuario
     Dado que existe un recurso privado llamado "Material compartido de literatura"
-    Y el propietario del recurso compartió "Material compartido de literatura" con "Estudiante Luis"
+    Y el propietario del recurso compartió "Material compartido de literatura" con "Luis"
     Y el usuario tiene una colección personal llamada "Literatura"
     Y el recurso "Material compartido de literatura" está incluido en la colección "Literatura"
-    Cuando el propietario retira el acceso al recurso para "Estudiante Luis"
+    Cuando el propietario retira el acceso al recurso para "Luis"
     Y el usuario consulta la colección "Literatura"
     Entonces el usuario no debe poder acceder al recurso "Material compartido de literatura" desde la colección "Literatura"
 
   Escenario: Conservar en una colección el acceso a un recurso que pasa a ser público
     Dado que existe un recurso privado llamado "Material de astronomía"
-    Y el propietario del recurso compartió "Material de astronomía" con "Estudiante Luis"
+    Y el propietario del recurso compartió "Material de astronomía" con "Luis"
     Y el usuario tiene una colección personal llamada "Astronomía"
     Y el recurso "Material de astronomía" está incluido en la colección "Astronomía"
     Cuando el propietario marca el recurso "Material de astronomía" como público
     Y el usuario consulta la colección "Astronomía"
     Entonces el usuario debe poder acceder al recurso "Material de astronomía" desde la colección "Astronomía"
 
+  # --- Restricciones de seguridad
+
   Escenario: No permitir modificar el recurso al organizarlo en una colección
     Dado que existe un recurso público llamado "Lectura introductoria de filosofía"
-    Y el propietario del recurso es "Docente Ana"
+    Y el propietario del recurso es "Ana"
     Y el usuario tiene una colección personal llamada "Filosofía"
     Cuando el usuario agrega el recurso "Lectura introductoria de filosofía" a la colección "Filosofía"
     Entonces el recurso debe quedar incluido en la colección "Filosofía"
-    Y "Estudiante Luis" no debe convertirse en propietario del recurso
-    Y "Estudiante Luis" no debe poder modificar el recurso
+    Y "Luis" no debe convertirse en propietario del recurso
+    Y "Luis" no debe poder modificar el recurso
