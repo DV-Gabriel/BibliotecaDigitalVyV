@@ -1,18 +1,4 @@
 # language: es
-
-  # Se retiró: marcar como favorito exitosamente por tipo de recurso público/propio
-  # (es solo confirmación de una acción CRUD sin condición de negocio), evitar duplicado
-  # de favorito, quitar de favoritos, visualizar lista ordenada por fecha, y acceso rápido/redirección
-  # — todo eso es CRUD y UI, no regla de negocio.
-  #
-  #Se conserva únicamente lo que depende de RN5/RN10: qué se puede marcar como favorito según
-  # el acceso al recurso, y qué pasa con un favorito cuando cambia el acceso al recurso original.
-
-  #Nota: crear/eliminar un favorito, evitar duplicados en la lista, ordenarla por fecha y el acceso
-  # rápido (clic → redirección) son funcionalidad de producto legítima, pero de sistema/UI, no de
-  # negocio — se recomienda documentarlas como historias de usuario técnicas o casos de prueba de
-  # interfaz, no como escenarios BDD de negocio.
-
 Característica: Gestionar favoritos y marcadores de acceso rápido
   Como usuario
   Quiero que mis favoritos respeten en todo momento el acceso vigente al recurso original (RN5, RN10)
