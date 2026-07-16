@@ -1,5 +1,5 @@
 Característica: Gestionar favoritos y marcadores de acceso rápido
-Como estudiante o docente
+Como usuario
 Quiero marcar y desmarcar recursos como favoritos
 Para acceder rápidamente a los recursos que más utilizo
 
