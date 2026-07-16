@@ -1,6 +1,6 @@
 # language: es
 Característica: Administrar anotaciones y notas personales por recurso
-  Como estudiante o docente
+  Como usuario
   Quiero registrar anotaciones personales sobre los recursos educativos
   Para guardar información importante relacionada con mi aprendizaje
 
