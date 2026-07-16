@@ -1,12 +1,5 @@
 # language: es
 
-  #Se retiró: el Esquema del escenario con 69% / 70% / 71% — es una prueba de borde de un algoritmo
-  # (parámetro de sistema), no un comportamiento de negocio. Ese tipo de prueba pertenece a pruebas
-  # unitarias/técnicas del componente de similitud, no a un feature BDD.
-  #
-  #Se ajustó: los ejemplos ahora se expresan en términos de negocio (nivel de similitud percibido), no de
-  # porcentaje exacto de corte, y se referencia explícitamente RN9.
-
 Característica: Crear recursos personalizados originales (detección de similitud por contenido)
   Como usuario
   Quiero que el sistema me advierta si el contenido de mi recurso es significativamente similar a uno existente (RN9)
