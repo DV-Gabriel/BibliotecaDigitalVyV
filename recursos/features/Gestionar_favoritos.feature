@@ -1,51 +1,41 @@
+# language: es
+
+  # Se retiró: marcar como favorito exitosamente por tipo de recurso público/propio
+  # (es solo confirmación de una acción CRUD sin condición de negocio), evitar duplicado
+  # de favorito, quitar de favoritos, visualizar lista ordenada por fecha, y acceso rápido/redirección
+  # — todo eso es CRUD y UI, no regla de negocio.
+  #
+  #Se conserva únicamente lo que depende de RN5/RN10: qué se puede marcar como favorito según
+  # el acceso al recurso, y qué pasa con un favorito cuando cambia el acceso al recurso original.
+
+  #Nota: crear/eliminar un favorito, evitar duplicados en la lista, ordenarla por fecha y el acceso
+  # rápido (clic → redirección) son funcionalidad de producto legítima, pero de sistema/UI, no de
+  # negocio — se recomienda documentarlas como historias de usuario técnicas o casos de prueba de
+  # interfaz, no como escenarios BDD de negocio.
+
 Característica: Gestionar favoritos y marcadores de acceso rápido
-Como usuario
-Quiero marcar y desmarcar recursos como favoritos
-Para acceder rápidamente a los recursos que más utilizo
+  Como usuario
+  Quiero que mis favoritos respeten en todo momento el acceso vigente al recurso original (RN5, RN10)
+  Para no perder ni conservar indebidamente acceso a través de un marcador
 
-Antecedentes:
-Dado que soy un usuario autenticado en el sistema
-Y existe un catálogo de recursos educativos digitales
+  Antecedentes:
+    Dado que soy un usuario autenticado en el sistema
 
-Esquema del escenario: Intentar marcar como favorito según el tipo de acceso al recurso
-Dado que existe un recurso de tipo "<tipo_recurso>"
-Cuando intento marcarlo como favorito
-Entonces el resultado de la acción es "<resultado>"
+  Esquema del escenario: Marcar como favorito según el tipo de acceso al recurso (RN5)
+    Dado que existe un recurso de tipo "<tipo_recurso>"
+    Cuando intento marcarlo como favorito
+    Entonces el resultado de la acción es "<resultado>"
 
-Ejemplos:
-| tipo_recurso                        | resultado                    |
-| público                             | marcado exitosamente         |
-| compartido conmigo                  | marcado exitosamente         |
-| propio                              | marcado exitosamente         |
-| privado no compartido conmigo       | acción rechazada             |
-| compartido y luego revocado         | eliminado automáticamente de favoritos |
+    Ejemplos:
+      | tipo_recurso                   | resultado             |
+      | público                        | marcado exitosamente  |
+      | compartido conmigo              | marcado exitosamente  |
+      | propio                          | marcado exitosamente  |
+      | privado no compartido conmigo   | acción rechazada      |
 
-Escenario: Intentar marcar un recurso ya marcado como favorito
-Dado que el recurso "R1" ya está en mi lista de favoritos
-Cuando intento marcar nuevamente "R1" como favorito
-Entonces el sistema no genera un duplicado
-Y me indica que el recurso ya se encuentra en favoritos
-
-Escenario: Quitar un recurso de favoritos
-Dado que el recurso "R1" está en mi lista de favoritos
-Cuando selecciono la opción "Quitar de favoritos" sobre "R1"
-Entonces "R1" deja de aparecer en mi lista de favoritos
-
-Escenario: Visualizar la lista de favoritos
-Dado que tengo varios recursos marcados como favoritos
-Cuando accedo a la sección "Mis favoritos"
-Entonces veo el listado completo de recursos marcados
-Ordenados por fecha de marcado más reciente
-
-Escenario: Un recurso favorito pierde el acceso compartido
-Dado que el recurso "R2" está en mi lista de favoritos
-Y el propietario revoca el acceso compartido sobre "R2"
-Cuando accedo a mi lista de favoritos
-Entonces "R2" ya no está disponible para abrir
-Y el sistema indica que el acceso fue revocado
-
-Escenario: Acceso rápido desde un marcador de favorito
-Dado que tengo el recurso "R1" marcado como favorito
-Cuando hago clic sobre "R1" desde la sección de favoritos
-Entonces soy redirigido directamente a la vista del recurso
-
+  Escenario: Un recurso favorito pierde disponibilidad al revocarse el acceso compartido (RN10)
+    Dado que el recurso "R2" está en mi lista de favoritos
+    Y el propietario revoca el acceso compartido sobre "R2"
+    Cuando accedo a mi lista de favoritos
+    Entonces "R2" ya no está disponible para abrir
+    Y el sistema indica que el acceso fue revocado

@@ -6,25 +6,19 @@ Característica: Administrar anotaciones y notas personales por recurso
 
   Antecedentes:
     Dado que soy un usuario autenticado en el sistema
-    Y tengo acceso al recurso sobre el cual quiero anotar (público, compartido conmigo o propio)
+    Y tengo acceso al recurso sobre el cual quiero anotar
 
-  Escenario: Crear una anotación en un recurso propio
-    Dado que soy el propietario del recurso "R1"
-    Cuando agrego la anotación "Revisar capítulo 3 antes del examen" sobre "R1"
-    Entonces la anotación queda guardada asociada a "R1" y a mi usuario
-    Y solo yo puedo visualizarla
+  Esquema del escenario: Crear una anotación personal según el tipo de acceso al recurso
+    Dado que tengo acceso "<tipo_acceso>" al recurso "<recurso>"
+    Cuando agrego una anotación personal sobre "<recurso>"
+    Entonces la anotación queda guardada asociada únicamente a mi usuario
+    Y no es visible para ningún otro usuario que consulte "<recurso>"
 
-  Escenario: Crear una anotación en un recurso público
-    Dado que el recurso "R2" es público
-    Cuando agrego una anotación personal sobre "R2"
-    Entonces la anotación se guarda vinculada únicamente a mi usuario
-    Y no es visible para ningún otro usuario que consulte "R2"
-
-  Escenario: Crear una anotación en un recurso compartido conmigo
-    Dado que el recurso "R3" fue compartido conmigo por su propietario
-    Cuando agrego una anotación personal sobre "R3"
-    Entonces la anotación queda registrada solo para mi usuario
-    Y ni el propietario ni otros usuarios con acceso pueden verla
+    Ejemplos:
+      | tipo_acceso | recurso |
+      | propio      | R1      |
+      | público     | R2      |
+      | compartido  | R3      |
 
   Escenario: Editar una anotación propia
     Dado que tengo una anotación previa sobre el recurso "R1"
@@ -49,19 +43,13 @@ Característica: Administrar anotaciones y notas personales por recurso
     Cuando el otro usuario abre "R1"
     Entonces no visualiza ninguna de mis anotaciones
 
-  Escenario: El propietario no puede ver las anotaciones de un usuario invitado
-    Dado que el usuario propietario comparte el recurso "R1" conmigo
-    Y yo agrego una anotación personal sobre "R1"
-    Cuando el propietario consulta "R1"
-    Entonces no puede ver mi anotación personal
-
   Escenario: Intentar anotar un recurso al que perdí el acceso
     Dado que el acceso al recurso "R3" me fue revocado por su propietario
     Cuando intento agregar una anotación sobre "R3"
     Entonces el sistema rechaza la acción
     Y me indica que ya no tengo acceso al recurso
 
-  Escenario: Las anotaciones existentes permanecen tras revocar el acceso
+  Escenario: Las anotaciones existentes permanecen ocultas tras revocar el acceso
     Dado que tenía anotaciones sobre el recurso "R3"
     Y el propietario revoca mi acceso a "R3"
     Cuando intento consultar mis anotaciones previas de "R3"

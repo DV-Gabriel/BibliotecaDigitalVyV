@@ -1,15 +1,14 @@
 # language: es
-
-  Característica: Compartir y revocar acceso a recursos educativos digitales
+Característica: Compartir y revocar acceso a recursos educativos digitales
   Como propietario de un recurso
   Quiero compartir mis recursos con otros usuarios y revocar ese acceso cuando lo decida
   Para controlar quién puede ver mi contenido
 
-  Antecedentes: :
-    Dado que existen los siguientes usuarios: "Ana", "Luis" y "Marta"
+  Antecedentes:
+    Dado que existen los usuarios "Ana", "Luis" y "Marta"
     Y el recurso "Ejercicios de Álgebra Lineal" es privado y pertenece a Luis
 
-  # Compartir
+  # --- Compartir ---
 
   Escenario: El propietario comparte un recurso con otro usuario
     Cuando Luis comparte "Ejercicios de Álgebra Lineal" con Ana
@@ -31,13 +30,13 @@
     Cuando Ana intenta compartir "Ejercicios de Álgebra Lineal" con Marta
     Entonces el sistema debe rechazar la acción
 
-  Escenario: Compartir un recurso que ya fue compartido con el mismo usuario
+  Escenario: Compartir un recurso que ya fue compartido con el mismo usuario no duplica el acceso
     Dado que "Ejercicios de Álgebra Lineal" fue compartido por Luis con Ana
     Cuando Luis intenta compartir "Ejercicios de Álgebra Lineal" nuevamente con Ana
     Entonces el sistema no debe duplicar el acceso
     Y Ana debe seguir teniendo acceso al recurso
 
-  # --- Revocar
+  # --- Revocar ---
 
   Escenario: El propietario revoca el acceso previamente otorgado
     Dado que "Ejercicios de Álgebra Lineal" fue compartido por Luis con Ana
@@ -51,8 +50,7 @@
     Entonces el sistema debe rechazar la acción
     Y Ana debe seguir teniendo acceso al recurso
 
-  Escenario: Revocar el acceso a un usuario que no tenía el recurso compartido
+  Escenario: Revocar el acceso a un usuario que no tenía el recurso compartido no genera cambios
     Cuando Luis intenta revocar el acceso de Marta a "Ejercicios de Álgebra Lineal"
     Entonces el sistema no debe generar ningún cambio
     Y debe indicar que Marta no tenía acceso al recurso
-

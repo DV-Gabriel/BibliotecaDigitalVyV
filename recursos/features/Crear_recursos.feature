@@ -1,7 +1,15 @@
 # language: es
+
+  #Se retiró: el Esquema del escenario con 69% / 70% / 71% — es una prueba de borde de un algoritmo
+  # (parámetro de sistema), no un comportamiento de negocio. Ese tipo de prueba pertenece a pruebas
+  # unitarias/técnicas del componente de similitud, no a un feature BDD.
+  #
+  #Se ajustó: los ejemplos ahora se expresan en términos de negocio (nivel de similitud percibido), no de
+  # porcentaje exacto de corte, y se referencia explícitamente RN9.
+
 Característica: Crear recursos personalizados originales (detección de similitud por contenido)
-  Como estudiante o docente
-  Quiero que el sistema detecte si el contenido de mi recurso es similar a uno existente
+  Como usuario
+  Quiero que el sistema me advierta si el contenido de mi recurso es significativamente similar a uno existente (RN9)
   Para reutilizar información existente o reestructurar mi recurso y aportar algo distinto
 
   Antecedentes:
@@ -12,41 +20,30 @@ Característica: Crear recursos personalizados originales (detección de similit
       en los sistemas físicos, así como sus transformaciones.
       """
 
-  # --- Detección de similitud por contenido ---
-
-  Escenario: El sistema detecta un recurso similar cuando el contenido supera el 70% de similitud
-    Cuando Ana solicita verificar similitud para el recurso "Apuntes de Energía y Calor", cuyo contenido tiene un 85% de similitud con "Resumen de Termodinámica"
-    Entonces el sistema debe mostrarle el recurso "Resumen de Termodinámica" como posible similar
-  Antes de que Ana confirme la creación
-
-  Escenario: El sistema no marca como similar un recurso por debajo del umbral
-    Cuando Ana solicita verificar similitud para el recurso "Introducción a la Biología Celular", cuyo contenido tiene un 15% de similitud con "Resumen de Termodinámica"
-    Entonces el sistema no debe mostrar ningún recurso similar
-
-  Escenario: El sistema detecta varios recursos que superan el umbral y los muestra todos
-    Dado que existe otro recurso "Guía de Transferencia de Calor", creado por "Marta"
-    Cuando Ana solicita verificar similitud para el recurso "Apuntes de Energía y Calor":
-      | recurso_existente              | porcentaje_similitud |
-      | Resumen de Termodinámica       | 85%                  |
-      | Guía de Transferencia de Calor | 72%                  |
-    Entonces el sistema debe mostrarle "Resumen de Termodinámica" y "Guía de Transferencia de Calor" como posibles similares
-
-  Esquema del escenario: El sistema evalúa el umbral del 70% como punto de corte
-    Cuando Ana solicita verificar similitud para un recurso cuyo contenido tiene un "<porcentaje>"% de similitud con "Resumen de Termodinámica"
-    Entonces el sistema "<resultado>" mostrar el recurso "Resumen de Termodinámica" como similar
+  Esquema del escenario: El sistema advierte al usuario según el nivel de similitud del contenido (RN9)
+    Cuando Ana solicita verificar similitud para un recurso con contenido "<nivel_similitud>" al de "Resumen de Termodinámica"
+    Entonces el sistema "<resultado>" advertir a Ana sobre el recurso "Resumen de Termodinámica" como posible similar
 
     Ejemplos:
-      | porcentaje | resultado |
-      | 69         | no debe   |
-      | 70         | debe      |
-      | 71         | debe      |
+      | nivel_similitud       | resultado    |
+      | claramente distinto   | no debe      |
+      | significativamente similar | debe    |
+
+  Escenario: El sistema detecta varios recursos significativamente similares y los muestra todos (RN9)
+    Dado que existe otro recurso "Guía de Transferencia de Calor", creado por "Marta", con contenido significativamente similar al de "Resumen de Termodinámica"
+    Cuando Ana solicita verificar similitud para el recurso "Apuntes de Energía y Calor"
+    Entonces el sistema debe advertirle sobre "Resumen de Termodinámica" y "Guía de Transferencia de Calor" como posibles similares
 
   # --- Decisión del usuario tras ver el recurso similar ---
 
   Escenario: El usuario decide continuar con la creación pese a la similitud detectada
-    Dado que el sistema le mostró a Ana el recurso similar "Resumen de Termodinámica"
+    Dado que el sistema le advirtió a Ana sobre el recurso similar "Resumen de Termodinámica"
     Cuando Ana confirma que desea continuar con la creación de "Apuntes de Energía y Calor"
     Entonces el recurso "Apuntes de Energía y Calor" debe quedar creado
     Y Ana debe quedar registrada como propietaria del nuevo recurso
 
-  Escenario: El usuario cancela la creación tras ver el recurso
+  Escenario: El usuario cancela la creación tras ver el recurso similar
+    Dado que el sistema le advirtió a Ana sobre el recurso similar "Resumen de Termodinámica"
+    Cuando Ana cancela la creación de "Apuntes de Energía y Calor"
+    Entonces el recurso "Apuntes de Energía y Calor" no debe quedar creado
+    Y el recurso "Resumen de Termodinámica" debe permanecer sin cambios
