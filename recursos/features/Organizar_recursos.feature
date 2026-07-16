@@ -1,19 +1,4 @@
 ﻿# language: es
-
-  #Se retiró (regla de sistema, no de negocio, sin RN que lo sustente):
-  #
-  #
-  #"Crear una colección personal" → es alta de un registro (CRUD), no una política de negocio.
-  #"Organizar un mismo recurso en más de una colección" → es capacidad técnica de relación muchos-a-muchos, no una regla.
-  #"Evitar duplicar el mismo recurso dentro de una misma colección" → es integridad de datos (constraint de
-  # sistema), no de negocio.
-  #"Ver los recursos organizados dentro de una colección" → es un listado/consulta, no una regla.
-  #
-  #
-  #Se conserva todo lo que sí prueba RN2 (propietario no cambia), RN3 (autor no cambia), RN5
-  # (visibilidad/acceso), RN6 (no se puede modificar el recurso) y ahora RN10 (favoritos/colecciones heredan
-  #el acceso del recurso original).
-
 Característica: Organizar recursos en colecciones personales
   Como usuario
   Quiero organizar en colecciones personales los recursos a los que tengo acceso
