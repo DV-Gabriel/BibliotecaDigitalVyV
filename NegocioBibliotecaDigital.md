@@ -41,14 +41,15 @@ incluso si el recurso es compartido o público.
 2. Crear recursos personalizados originales (detección de similitud por contenido)
 3. Registrar recursos educativos de autores externos
 4. Editar mis propios recursos educativos digitales(Actualizar recursos propios)
+5. Guardar y publicar recursos como borrador
 
 ### Gestionar espacio personal de aprendizaje
 
-5. Organizar recursos en colecciones personales(Crear colecciones de recursos/tableros)
-6. Gestionar favoritos y marcadores de acceso rápido
-7. Administrar anotaciones y notas personales por recurso
+6. Organizar recursos en colecciones personales(Crear colecciones de recursos/tableros)
+7. Gestionar favoritos y marcadores de acceso rápido
+8. Administrar anotaciones y notas personales por recurso
 
 ### Gestionar interacción entre usuarios
 
-8. Compartir y revocar acceso a recursos educativos digitales
-9. Acceder a recursos compartidos por otros usuarios
+9. Compartir y revocar acceso a recursos educativos digitales
+10. Acceder a recursos compartidos por otros usuarios
