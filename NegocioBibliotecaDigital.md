@@ -26,6 +26,10 @@ libro) y no necesariamente un usuario registrado en el sistema.
 7. Un recurso debe estar asociado a una o más etiquetas para facilitar su búsqueda.
 8. Las anotaciones y notas que un usuario hace sobre un recurso son de uso personal y no son visibles para otros usuarios,
 incluso si el recurso es compartido o público.
+9. Un rol no otorga ni restringe ningún permiso sobre el recurso, funciona como indicador de confianza para quien lo consulta.
+10. Un recurso que aún no cumple los requisitos de RN1 (título, descripción, categoría y etiqueta) se mantiene en estado
+"borrador" y es visible únicamente para su propietario, no puede compartirse, publicarse en el catálogo, ni organizarse en
+colecciones de otros usuarios. Al completar los requisitos de RN1, el propietario puede publicarlo.
 
 # Capacidades
 
