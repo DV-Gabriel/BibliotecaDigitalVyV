@@ -1,66 +1,66 @@
-# language: es
-Característica: Administrar anotaciones y notas personales por recurso
+# language: en
+Feature: Administrar anotaciones y notas personales por recurso
   Como usuario
   Quiero registrar anotaciones personales sobre los recursos educativos
   Para guardar información importante relacionada con mi aprendizaje
 
-  Antecedentes:
-    Dado que soy un usuario autenticado en el sistema
-    Y tengo acceso al recurso sobre el cual quiero anotar
+  Background:
+    Given that I am an authenticated user in the system
+    And I have access to the resource I want to annotate
 
-  Esquema del escenario: Crear una anotación personal según el tipo de acceso al recurso
-    Dado que tengo acceso "<tipo_acceso>" al recurso "<recurso>"
-    Cuando agrego una anotación personal sobre "<recurso>"
-    Entonces la anotación queda guardada asociada únicamente a mi usuario
-    Y no es visible para ningún otro usuario que consulte "<recurso>"
+  Scenario Outline: Crear una anotación personal según el tipo de acceso al recurso
+    Given that I have "<tipo_acceso>" access to the resource "<recurso>"
+    When I add a personal annotation about "<recurso>"
+    Then the annotation is saved and associated only to my user
+    And it is not visible to any other user who views "<recurso>"
 
-    Ejemplos:
+    Examples:
       | tipo_acceso | recurso |
       | propio      | R1      |
       | público     | R2      |
       | compartido  | R3      |
 
-  Escenario: Editar una anotación propia
-    Dado que tengo una anotación previa sobre el recurso "R1"
-    Cuando modifico el contenido de esa anotación
-    Entonces se guarda el nuevo contenido
-    Y se conserva su carácter privado
+  Scenario: Editar una anotación propia
+    Given that I have a previous annotation on resource "R1"
+    When I change the content of that annotation
+    Then the new content is saved
+    And its private nature is preserved
 
-  Escenario: Eliminar una anotación propia
-    Dado que tengo una anotación registrada sobre el recurso "R1"
-    Cuando elimino dicha anotación
-    Entonces la anotación deja de estar asociada al recurso
-    Y ya no aparece en mi listado de notas de "R1"
+  Scenario: Eliminar una anotación propia
+    Given that I have an annotation registered on resource "R1"
+    When I delete that annotation
+    Then the annotation is no longer associated with the resource
+    And it no longer appears in my notes list for "R1"
 
-  Escenario: Consultar mis anotaciones sobre un recurso
-    Dado que he creado una o más anotaciones sobre el recurso "R1"
-    Cuando abro la vista de anotaciones de "R1"
-    Entonces veo únicamente las anotaciones que yo mismo he creado
+  Scenario: Consultar mis anotaciones sobre un recurso
+    Given that I have created one or more annotations on resource "R1"
+    When I open the annotations view for "R1"
+    Then I see only the annotations that I myself created
 
-  Escenario: Otro usuario no puede ver mis anotaciones en un recurso compartido
-    Dado que comparto el recurso "R1" con otro usuario
-    Y yo tengo anotaciones personales sobre "R1"
-    Cuando el otro usuario abre "R1"
-    Entonces no visualiza ninguna de mis anotaciones
+  Scenario: Otro usuario no puede ver mis anotaciones en un recurso compartido
+    Given that I share resource "R1" with another user
+    And I have personal annotations on "R1"
+    When the other user opens "R1"
+    Then they do not see any of my annotations
 
-  Escenario: Intentar anotar un recurso al que perdí el acceso
-    Dado que el acceso al recurso "R3" me fue revocado por su propietario
-    Cuando intento agregar una anotación sobre "R3"
-    Entonces el sistema rechaza la acción
-    Y me indica que ya no tengo acceso al recurso
+  Scenario: Intentar anotar un recurso al que perdí el acceso
+    Given that my access to resource "R3" was revoked by its owner
+    When I try to add an annotation about "R3"
+    Then the system rejects the action
+    And it indicates that I no longer have access to the resource
 
-  Escenario: Las anotaciones existentes permanecen ocultas tras revocar el acceso
-    Dado que tenía anotaciones sobre el recurso "R3"
-    Y el propietario revoca mi acceso a "R3"
-    Cuando intento consultar mis anotaciones previas de "R3"
-    Entonces el sistema no me permite visualizarlas mientras no tenga acceso al recurso
+  Scenario: Las anotaciones existentes permanecen ocultas tras revocar el acceso
+    Given that I had annotations on resource "R3"
+    And the owner revokes my access to "R3"
+    When I try to view my previous annotations for "R3"
+    Then the system does not allow me to view them while I do not have access to the resource
 
-  Esquema del escenario: Visibilidad de anotaciones según el tipo de usuario que consulta el recurso
-    Dado que el usuario "<usuario_creador>" crea una anotación sobre un recurso
-    Cuando el usuario "<usuario_consultor>" abre ese mismo recurso
-    Entonces la anotación es "<visibilidad>"
+  Scenario Outline: Visibilidad de anotaciones según el tipo de usuario que consulta el recurso
+    Given that the user "<usuario_creador>" creates an annotation on a resource
+    When the user "<usuario_consultor>" opens that same resource
+    Then the annotation is "<visibilidad>"
 
-    Ejemplos:
+    Examples:
       | usuario_creador | usuario_consultor             | visibilidad |
       | propietario     | propietario (él mismo)        | visible     |
       | propietario     | usuario con acceso compartido | no visible  |

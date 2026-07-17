@@ -1,48 +1,48 @@
-# language: es
+# language: en
 
-Característica: Guardar y publicar recursos como borrador
+Feature: Guardar y publicar recursos como borrador
   Como usuario
   Quiero poder guardar el progreso de un recurso incompleto y retomarlo después
   Para no perder mi trabajo mientras completo los datos obligatorios antes de publicarlo (RN1, RN12)
 
-  Antecedentes:
-    Dado que "Ana" es un usuario autenticado en el sistema
+  Background:
+    Given that "Ana" is an authenticated user in the system
 
-  Escenario: Guardar un recurso incompleto como borrador
-    Cuando Ana empieza a crear un recurso con título "Guía de Estadística" y sale sin completar la categoría ni las etiquetas
-    Entonces el recurso "Guía de Estadística" debe quedar guardado con estado "borrador"
-    Y el recurso no debe aparecer en el catálogo público
+  Scenario: Guardar un recurso incompleto como borrador
+    When Ana begins creating a resource titled "Guía de Estadística" and exits without completing category or tags
+    Then the resource "Guía de Estadística" should be saved with state "borrador"
+    And the resource should not appear in the public catalog
 
-  Escenario: Reanudar la edición de un borrador propio
-    Dado que el recurso "Guía de Estadística" quedó guardado como borrador con el contenido que Ana había ingresado
-    Cuando Ana retoma la edición de "Guía de Estadística"
-    Entonces debe ver el contenido que había guardado previamente
+  Scenario: Reanudar la edición de un borrador propio
+    Given that the resource "Guía de Estadística" was saved as a draft with the content Ana entered
+    When Ana resumes editing "Guía de Estadística"
+    Then she should see the content she had previously saved
 
-  Escenario: Un borrador solo es visible para su propietario
-    Dado que Ana tiene el recurso "Guía de Estadística" guardado como "borrador"
-    Cuando Luis intenta consultar el recurso "Guía de Estadística"
-    Entonces el sistema debe rechazar el acceso
+  Scenario: Un borrador solo es visible para su propietario
+    Given that Ana has the resource "Guía de Estadística" saved as a "borrador"
+    When Luis attempts to view the resource "Guía de Estadística"
+    Then the system should deny access
 
-  Escenario: No permitir compartir un recurso en borrador
-    Dado que Ana tiene el recurso "Guía de Estadística" guardado como "borrador"
-    Cuando Ana intenta compartir "Guía de Estadística" con Luis
-    Entonces el sistema debe rechazar la acción
-    Y debe indicar que el recurso debe completarse y publicarse antes de compartirse
+  Scenario: No permitir compartir un recurso en borrador
+    Given that Ana has the resource "Guía de Estadística" saved as a "borrador"
+    When Ana attempts to share "Guía de Estadística" with Luis
+    Then the system should reject the action
+    And it should indicate that the resource must be completed and published before sharing
 
-  Escenario: Publicar un borrador al completar los campos obligatorios
-    Dado que Ana tiene el recurso "Guía de Estadística" guardado como "borrador"
-    Y Ana completa título, descripción, categoría y al menos una etiqueta
-    Cuando Ana publica el recurso "Guía de Estadística"
-    Entonces el recurso debe quedar con estado "publicado"
-    Y el recurso debe quedar visible según su visibilidad configurada
+  Scenario: Publicar un borrador al completar los campos obligatorios
+    Given that Ana has the resource "Guía de Estadística" saved as a "borrador"
+    And Ana completes title, description, category and at least one tag
+    When Ana publishes the resource "Guía de Estadística"
+    Then the resource should have state "publicado"
+    And the resource should be visible according to its configured visibility
 
-  Esquema del escenario: No permitir publicar mientras falte un campo obligatorio
-    Dado que Ana tiene el recurso "Guía de Estadística" guardado como "borrador" sin "<campo>"
-    Cuando Ana intenta publicar "Guía de Estadística"
-    Entonces el sistema debe impedir la publicación
-    Y debe indicar que "<mensaje>"
+  Scenario Outline: No permitir publicar mientras falte un campo obligatorio
+    Given that Ana has the resource "Guía de Estadística" saved as a "borrador" without "<campo>"
+    When Ana attempts to publish "Guía de Estadística"
+    Then the system should prevent publication
+    And it should indicate "<mensaje>"
 
-    Ejemplos:
+    Examples:
       | campo       | mensaje                                     |
       | título      | el título es obligatorio                    |
       | descripción | la descripción es obligatoria               |

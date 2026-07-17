@@ -1,0 +1,646 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Comparticiones - Biblioteca Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- Reset y Variables --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --color-primary: #221613;
+            --color-secondary: #514335;
+            --color-tertiary: #557e9e;
+            --color-accent: #55a59e;
+            --color-background: #f9f9f9;
+            --color-white: #ffffff;
+            --color-success: #2d8f7e;
+            --color-danger: #dc3545;
+            --color-warning: #ffc107;
+            --shadow-sm: 0 2px 8px rgba(34, 22, 19, 0.08);
+            --shadow-md: 0 8px 30px rgba(34, 22, 19, 0.12);
+            --shadow-lg: 0 16px 48px rgba(34, 22, 19, 0.16);
+            --radius: 16px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: var(--color-background);
+            color: var(--color-primary);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* --- Animaciones --- */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* --- Mensajes --- */
+        .messages {
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .message {
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            border-left: 4px solid;
+        }
+
+        .message-success {
+            background: rgba(45, 143, 126, 0.1);
+            border-color: var(--color-success);
+            color: var(--color-success);
+        }
+
+        .message-info {
+            background: rgba(85, 126, 158, 0.1);
+            border-color: var(--color-tertiary);
+            color: var(--color-tertiary);
+        }
+
+        .message-error {
+            background: rgba(220, 53, 69, 0.1);
+            border-color: var(--color-danger);
+            color: var(--color-danger);
+        }
+
+        .message-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border-color: var(--color-warning);
+            color: #856404;
+        }
+
+        /* --- Breadcrumb --- */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: var(--color-secondary);
+            animation: fadeInUp 0.6s ease-out;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb a {
+            color: var(--color-tertiary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .breadcrumb a:hover {
+            color: var(--color-accent);
+            text-decoration: underline;
+        }
+
+        .breadcrumb .separator {
+            color: #d0c9c0;
+        }
+
+        .breadcrumb .current {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        /* --- Header --- */
+        .page-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            gap: 1rem;
+            animation: fadeInUp 0.6s ease-out 0.05s both;
+        }
+
+        .page-header .title-section {
+            flex: 1;
+        }
+
+        .page-header .title-section .icon-wrapper {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            color: white;
+            background: linear-gradient(135deg, var(--color-tertiary) 0%, var(--color-accent) 100%);
+            margin-right: 0.75rem;
+            box-shadow: 0 4px 15px rgba(85, 126, 158, 0.3);
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .page-header .subtitle {
+            color: var(--color-secondary);
+            font-size: 0.95rem;
+            margin-top: 0.2rem;
+        }
+
+        .page-header .subtitle .recurso-link {
+            color: var(--color-tertiary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .page-header .subtitle .recurso-link:hover {
+            color: var(--color-accent);
+            text-decoration: underline;
+        }
+
+        .page-header .actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+
+        /* --- Botones --- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-accent) 0%, #3d8b84 100%);
+            color: var(--color-white);
+            border-color: var(--color-accent);
+            box-shadow: 0 4px 15px rgba(85, 165, 158, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 8px 25px rgba(85, 165, 158, 0.4);
+        }
+
+        .btn-outline {
+            background: var(--color-white);
+            color: var(--color-secondary);
+            border-color: #d0c9c0;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--color-tertiary);
+            color: var(--color-tertiary);
+        }
+
+        .btn-danger {
+            background: var(--color-danger);
+            color: white;
+            border-color: var(--color-danger);
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            border-color: #c82333;
+        }
+
+        .btn-success {
+            background: var(--color-success);
+            color: white;
+            border-color: var(--color-success);
+        }
+
+        .btn-success:hover {
+            background: #1f6b5e;
+            border-color: #1f6b5e;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        /* --- Tabla de compartidos --- */
+        .compartidos-section {
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+        }
+
+        .compartidos-section .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .compartidos-section .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .compartidos-section .section-title i {
+            color: var(--color-tertiary);
+        }
+
+        .compartidos-table {
+            width: 100%;
+            background: var(--color-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .compartidos-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .compartidos-table thead {
+            background: var(--color-background);
+            border-bottom: 2px solid #f0ede9;
+        }
+
+        .compartidos-table thead th {
+            padding: 0.8rem 1.5rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-secondary);
+        }
+
+        .compartidos-table tbody td {
+            padding: 0.8rem 1.5rem;
+            border-bottom: 1px solid #f0ede9;
+            font-size: 0.9rem;
+            color: var(--color-primary);
+            vertical-align: middle;
+        }
+
+        .compartidos-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .compartidos-table tbody tr:hover {
+            background: rgba(85, 126, 158, 0.03);
+        }
+
+        .compartidos-table .badge-estado {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.2rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .badge-activo {
+            background: rgba(45, 143, 126, 0.1);
+            color: var(--color-success);
+        }
+
+        .badge-activo i {
+            color: var(--color-success);
+        }
+
+        .badge-revocado {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--color-danger);
+        }
+
+        .badge-revocado i {
+            color: var(--color-danger);
+        }
+
+        .compartidos-table .actions-cell {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .compartidos-table .btn-icon {
+            padding: 0.3rem 0.8rem;
+            font-size: 0.75rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid #e8e3de;
+            background: transparent;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .compartidos-table .btn-icon:hover {
+            transform: translateY(-2px);
+        }
+
+        .compartidos-table .btn-revocar {
+            color: var(--color-danger);
+        }
+
+        .compartidos-table .btn-revocar:hover {
+            background: var(--color-danger);
+            color: white;
+            border-color: var(--color-danger);
+        }
+
+        .compartidos-table .btn-revocar.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .compartidos-table .btn-revocar.disabled:hover {
+            background: transparent;
+            color: var(--color-danger);
+            transform: none;
+        }
+
+        /* --- Empty state --- */
+        .empty-compartidos {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: var(--color-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 2px dashed #d0c9c0;
+        }
+
+        .empty-compartidos i {
+            font-size: 3rem;
+            color: #d0c9c0;
+            margin-bottom: 1rem;
+        }
+
+        .empty-compartidos h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 0.3rem;
+        }
+
+        .empty-compartidos p {
+            color: var(--color-secondary);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+            }
+
+            .page-header .title-section h1 {
+                font-size: 1.5rem;
+            }
+
+            .page-header .actions {
+                width: 100%;
+            }
+
+            .page-header .actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .compartidos-table {
+                overflow-x: auto;
+            }
+
+            .compartidos-table table {
+                min-width: 600px;
+            }
+
+            .compartidos-table thead th,
+            .compartidos-table tbody td {
+                padding: 0.6rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .page-header .title-section .icon-wrapper {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Mensajes -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message message-{{ message.tags }}">
+                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'info' %}info-circle{% elif message.tags == 'error' %}times-circle{% else %}exclamation-triangle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <a href="{% url 'recursos_digitales:catalogo' %}">
+                <i class="fas fa-home"></i> Catálogo
+            </a>
+            <span class="separator">/</span>
+            <a href="{% url 'recursos_digitales:detalle' recurso.pk %}">
+                {{ recurso.titulo|truncatechars:30 }}
+            </a>
+            <span class="separator">/</span>
+            <span class="current">Compartidos</span>
+        </nav>
+
+        <!-- Header -->
+        <header class="page-header">
+            <div class="title-section">
+                <h1>
+                    <span class="icon-wrapper">
+                        <i class="fas fa-users"></i>
+                    </span>
+                    Gestionar Comparticiones
+                </h1>
+                <p class="subtitle">
+                    Usuarios con acceso a
+                    <a href="{% url 'recursos_digitales:detalle' recurso.pk %}" class="recurso-link">
+                        "{{ recurso.titulo }}"
+                    </a>
+                </p>
+            </div>
+            <div class="actions">
+                <a href="{% url 'interacciones:compartir' recurso.pk %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Compartir con otro usuario
+                </a>
+            </div>
+        </header>
+
+        <!-- Lista de compartidos -->
+        <section class="compartidos-section">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fas fa-list"></i>
+                    Usuarios con acceso
+                    <span style="font-weight: 400; font-size: 0.85rem; color: var(--color-secondary);">
+                        ({{ compartidos|length }})
+                    </span>
+                </div>
+            </div>
+
+            {% if compartidos %}
+                <div class="compartidos-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Compartido por</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for compartido in compartidos %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ compartido.usuario.get_full_name|default:compartido.usuario.username }}</strong>
+                                        <br>
+                                        <small style="color: var(--color-secondary); font-size: 0.75rem;">
+                                            @{{ compartido.usuario.username }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        {{ compartido.compartido_por.get_full_name|default:compartido.compartido_por.username }}
+                                    </td>
+                                    <td style="font-size: 0.85rem; color: var(--color-secondary);">
+                                        {{ compartido.fecha_compartido|date:"d/m/Y H:i" }}
+                                        {% if compartido.fecha_revocado %}
+                                            <br>
+                                            <small style="color: var(--color-danger);">
+                                                Revocado: {{ compartido.fecha_revocado|date:"d/m/Y H:i" }}
+                                            </small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if compartido.activo %}
+                                            <span class="badge-estado badge-activo">
+                                                <i class="fas fa-check-circle"></i> Activo
+                                            </span>
+                                        {% else %}
+                                            <span class="badge-estado badge-revocado">
+                                                <i class="fas fa-times-circle"></i> Revocado
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="actions-cell">
+                                            {% if compartido.activo %}
+                                                <form method="post" action="{% url 'interacciones:revocar' compartido.pk %}" style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn-icon btn-revocar" onclick="return confirm('¿Revocar el acceso de {{ compartido.usuario.username }} a "{{ recurso.titulo }}"?')">
+                                                        <i class="fas fa-ban"></i> Revocar                                                    </button>
+                                                </form>
+                                            {% else %}
+                                                <span class="btn-icon btn-revocar disabled" style="opacity: 0.4; cursor: not-allowed;">
+                                                    <i class="fas fa-ban"></i> Revocado
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-compartidos">
+                    <i class="fas fa-users"></i>
+                    <h3>No hay usuarios con acceso</h3>
+                    <p>
+                        Este recurso aún no ha sido compartido con ningún usuario.
+                        <br>
+                        <a href="{% url 'interacciones:compartir' recurso.pk %}" style="color: var(--color-accent); text-decoration: none; font-weight: 600;">
+                            Compártelo ahora →
+                        </a>
+                    </p>
+                </div>
+            {% endif %}
+        </section>
+
+    </div>
+</body>
+</html>

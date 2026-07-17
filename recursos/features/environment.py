@@ -9,12 +9,15 @@ import django
 from django.conf import settings
 from django.test.utils import get_runner
 
+# Asegurar que DJANGO_SETTINGS_MODULE esté definido antes de que se importen
+# los módulos de steps que acceden a modelos. Esto se ejecuta al importar
+# este archivo (antes de la carga de los step modules por behave).
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BibliotecaDigital.settings')
+django.setup()
+
 
 def before_all(context):
     """Se ejecuta una vez antes de todos los tests."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BibliotecaDigital.settings')
-    django.setup()
-    
     # Obtener el runner de tests de Django
     TestRunner = get_runner(settings)
     context.test_runner = TestRunner(verbosity=2, interactive=False, keepdb=True)

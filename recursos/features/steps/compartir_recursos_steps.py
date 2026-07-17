@@ -148,14 +148,6 @@ def step_try_revoke_access(context, usuario, titulo, receptor):
         context.last_error_message = str(e)
 
 
-@then('debe mostrar un mensaje indicando que {receptor} no tenía acceso al recurso')
-def step_check_no_access_message(context, receptor):
-    """Verifica mensaje de no acceso previo."""
-    if hasattr(context, 'last_error_message'):
-        assert receptor.lower() in context.last_error_message.lower() or \
-               "no tenía acceso" in context.last_error_message.lower()
-
-
 @then('el recurso no debe aparecer en la lista de "recursos compartidos conmigo" de {usuario}')
 def step_resource_not_in_shared_list(context, usuario):
     """Verifica que el recurso no está en la lista de compartidos."""

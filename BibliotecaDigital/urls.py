@@ -28,5 +28,6 @@ urlpatterns = [
     path('recursos/', include('recursos_digitales.urls')),
     path('espacio/', include('espacio_personal.urls')),
     path('interacciones/', include('interacciones.urls')),
+    path('usuarios/', include('usuarios.urls')),
 ]
 

@@ -11,7 +11,12 @@ User = get_user_model()
 
 @when('{usuario} registra un recurso con:')
 def step_register_resource(context, usuario):
-    """Registra un recurso con campos específicos."""
+    """Registra un recurso con campos específicos.
+
+    Si en los campos viene un `autor`, se crea como recurso EXTERNO con
+    `autor_texto`. Si no hay `autor`, se registra como recurso ORIGINAL y
+    se asigna el propietario como `autor_usuario`.
+    """
     user = context.usuarios.get(usuario)
     if not user:
         user = User.objects.create_user(
@@ -20,39 +25,50 @@ def step_register_resource(context, usuario):
             first_name=usuario,
         )
         context.usuarios[usuario] = user
-    
+
     campos = {}
     for row in context.table:
         campos[row['campo']] = row['valor']
-    
+
     # Crear o get categoría
     categoria = None
     if 'categoría' in campos:
         categoria, _ = Categoria.objects.get_or_create(nombre=campos['categoría'])
-    
+
     # Determinar visibilidad
     visibilidad = campos.get('visibilidad', RecursoDigital.Visibilidad.PRIVADO)
-    
-    # Determinar autor
-    autor_texto = campos.get('autor', '')
-    
-    recurso = RecursoDigital.objects.create(
-        titulo=campos.get('título', ''),
-        descripcion=campos.get('descripción', ''),
-        propietario=user,
-        tipo=RecursoDigital.Tipo.EXTERNO,
-        categoria=categoria,
-        autor_texto=autor_texto,
-        visibilidad=visibilidad,
-        estado=RecursoDigital.Estado.PUBLICADO,
-    )
-    
+
+    # Si el autor se especificó como texto, crear como EXTERNO
+    if campos.get('autor'):
+        recurso = RecursoDigital.objects.create(
+            titulo=campos.get('título', ''),
+            descripcion=campos.get('descripción', ''),
+            propietario=user,
+            tipo=RecursoDigital.Tipo.EXTERNO,
+            categoria=categoria,
+            autor_texto=campos.get('autor'),
+            visibilidad=visibilidad,
+            estado=RecursoDigital.Estado.PUBLICADO,
+        )
+    else:
+        # Sin autor externo, el propietario será el autor
+        recurso = RecursoDigital.objects.create(
+            titulo=campos.get('título', ''),
+            descripcion=campos.get('descripción', ''),
+            propietario=user,
+            tipo=RecursoDigital.Tipo.ORIGINAL,
+            categoria=categoria,
+            autor_usuario=user,
+            visibilidad=visibilidad,
+            estado=RecursoDigital.Estado.PUBLICADO,
+        )
+
     # Agregar etiquetas
     if 'etiquetas' in campos:
         for etiqueta_nombre in campos['etiquetas'].split(','):
             etiqueta, _ = Etiqueta.objects.get_or_create(nombre=etiqueta_nombre.strip())
             recurso.etiquetas.add(etiqueta)
-    
+
     if not hasattr(context, 'recursos'):
         context.recursos = {}
     context.recursos[campos.get('título')] = recurso
@@ -165,57 +181,8 @@ def step_verify_registration_prevented(context):
         "Se esperaba un error al registrar"
 
 
-@then('debe indicar que "{mensaje}"')
-def step_verify_error_message_external(context, mensaje):
-    """Verifica el mensaje de error."""
-    if hasattr(context, 'last_error_message'):
-        assert mensaje.lower() in context.last_error_message.lower(), \
-            f"Mensaje esperado: {mensaje}, obtenido: {context.last_error_message}"
 
 
-@when('{usuario} registra un recurso con:')
-def step_register_without_external_author(context, usuario):
-    """Registra un recurso sin especificar autor externo."""
-    user = context.usuarios.get(usuario)
-    if not user:
-        user = User.objects.create_user(
-            username=usuario.lower(),
-            password='test123',
-            first_name=usuario,
-        )
-        context.usuarios[usuario] = user
-    
-    campos = {}
-    for row in context.table:
-        campos[row['campo']] = row['valor']
-    
-    # Crear categoría
-    categoria = None
-    if 'categoría' in campos:
-        categoria, _ = Categoria.objects.get_or_create(nombre=campos['categoría'])
-    
-    # Sin autor especificado, debería ser el propietario
-    recurso = RecursoDigital.objects.create(
-        titulo=campos.get('título', ''),
-        descripcion=campos.get('descripción', ''),
-        propietario=user,
-        tipo=RecursoDigital.Tipo.ORIGINAL,
-        categoria=categoria,
-        autor_usuario=user,  # El propietario es autor
-        visibilidad=campos.get('visibilidad', RecursoDigital.Visibilidad.PRIVADO),
-        estado=RecursoDigital.Estado.PUBLICADO,
-    )
-    
-    # Agregar etiquetas
-    if 'etiquetas' in campos:
-        for etiqueta_nombre in campos['etiquetas'].split(','):
-            etiqueta, _ = Etiqueta.objects.get_or_create(nombre=etiqueta_nombre.strip())
-            recurso.etiquetas.add(etiqueta)
-    
-    if not hasattr(context, 'recursos'):
-        context.recursos = {}
-    context.recursos[campos.get('título')] = recurso
-    context.ultimo_recurso_sin_autor_externo = recurso
 
 
 @then('el recurso "{titulo}" debe quedar registrado con autor "{autor}"')
@@ -257,20 +224,6 @@ def step_register_private_external_resource(context, usuario, titulo, autor):
         context.recursos = {}
     context.recursos[titulo] = recurso
 
-
-@when('{usuario} comparte "{titulo}" con {otro_usuario}')
-def step_share_external_resource(context, usuario, titulo, otro_usuario):
-    """Comparte un recurso externo."""
-    propietario = context.usuarios.get(usuario)
-    receptor = context.usuarios.get(otro_usuario)
-    recurso = context.recursos.get(titulo)
-    
-    CompartidoCon.objects.get_or_create(
-        recurso=recurso,
-        usuario=receptor,
-        compartido_por=propietario,
-        defaults={'activo': True}
-    )
 
 
 @then('{usuario} debe tener acceso al recurso "{titulo}"')

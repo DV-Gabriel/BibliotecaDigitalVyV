@@ -1,43 +1,43 @@
-# language: es
-Característica: Acceder a recursos compartidos por otros usuarios
+# language: en
+Feature: Acceder a recursos compartidos por otros usuarios
   Como usuario
   Quiero ver y consultar los recursos que otros usuarios han compartido conmigo
   Para aprovechar el material que me ha sido otorgado
 
-  Antecedentes:
-    Dado que existen los usuarios "Ana", "Luis" y "Marta"
-    Y el recurso "Ejercicios de Álgebra Lineal" es privado y pertenece a Luis
-    Y el recurso "Apuntes de Química Orgánica" es privado y pertenece a Marta
+  Background:
+    Given that the users "Ana", "Luis" and "Marta" exist
+    And the resource "Ejercicios de Álgebra Lineal" is private and belongs to Luis
+    And the resource "Apuntes de Química Orgánica" is private and belongs to Marta
 
-  Escenario: Un usuario ve en su lista solo los recursos compartidos con él
-    Dado que "Ejercicios de Álgebra Lineal" fue compartido por Luis con Ana
-    Cuando Ana consulta su lista de "recursos compartidos conmigo"
-    Entonces debe ver el recurso "Ejercicios de Álgebra Lineal" en la lista
-    Y no debe ver el recurso "Apuntes de Química Orgánica" en la lista
+  Scenario: Un usuario ve en su lista solo los recursos compartidos con él
+    Given that "Ejercicios de Álgebra Lineal" was shared by Luis with Ana
+    When Ana checks her "recursos compartidos conmigo" list
+    Then she should see the resource "Ejercicios de Álgebra Lineal" in the list
+    And she should not see the resource "Apuntes de Química Orgánica" in the list
 
-  Escenario: Un usuario puede abrir y consultar el contenido de un recurso compartido con él
-    Dado que "Ejercicios de Álgebra Lineal" fue compartido por Luis con Ana
-    Cuando Ana abre el recurso "Ejercicios de Álgebra Lineal"
-    Entonces debe poder visualizar su contenido completo
+  Scenario: Un usuario puede abrir y consultar el contenido de un recurso compartido con él
+    Given that "Ejercicios de Álgebra Lineal" was shared by Luis with Ana
+    When Ana opens the resource "Ejercicios de Álgebra Lineal"
+    Then she should be able to view its full content
 
-  Escenario: Un usuario no puede acceder a un recurso privado que no le ha sido compartido
-    Cuando Ana intenta abrir el recurso "Apuntes de Química Orgánica"
-    Entonces el sistema debe rechazar el acceso
-    Y debe mostrar un mensaje indicando que no tiene permiso para ver ese recurso
+  Scenario: Un usuario no puede acceder a un recurso privado que no le ha sido compartido
+    When Ana attempts to open the resource "Apuntes de Química Orgánica"
+    Then the system should deny access
+    And it should display a message indicating that she does not have permission to view that resource
 
-  Escenario: Un usuario puede acceder a un recurso compartido con varios usuarios a la vez
-    Dado que "Ejercicios de Álgebra Lineal" fue compartido por Luis con Ana y con Marta
-    Cuando Marta abre el recurso "Ejercicios de Álgebra Lineal"
-    Entonces debe poder visualizar su contenido completo
+  Scenario: Un usuario puede acceder a un recurso compartido con varios usuarios a la vez
+    Given that "Ejercicios de Álgebra Lineal" was shared by Luis with Ana and Marta
+    When Marta opens the resource "Ejercicios de Álgebra Lineal"
+    Then she should be able to view its full content
 
-  Escenario: Cualquier usuario puede acceder a un recurso público sin necesidad de que se lo compartan
-    Dado que existe el usuario "Carlos"
-    Y el recurso "Introducción a la Física" es público y pertenece a Carlos
-    Cuando Ana abre el recurso "Introducción a la Física"
-    Entonces debe poder visualizar su contenido completo
+  Scenario: Cualquier usuario puede acceder a un recurso público sin necesidad de que se lo compartan
+    Given that the user "Carlos" exists
+    And the resource "Introducción a la Física" is public and belongs to Carlos
+    When Ana opens the resource "Introducción a la Física"
+    Then she should be able to view its full content
 
-  Escenario: Un usuario con acceso compartido no puede modificar el recurso
-    Dado que "Ejercicios de Álgebra Lineal" fue compartido por Luis con Ana
-    Cuando Ana intenta editar el recurso "Ejercicios de Álgebra Lineal"
-    Entonces el sistema debe rechazar la acción
-    Y debe mostrar un mensaje indicando que solo el propietario puede modificar el recurso
+  Scenario: Un usuario con acceso compartido no puede modificar el recurso
+    Given that "Ejercicios de Álgebra Lineal" was shared by Luis with Ana
+    When Ana attempts to edit the resource "Ejercicios de Álgebra Lineal"
+    Then the system should reject the action
+    And it should display a message indicating that only the owner can modify the resource

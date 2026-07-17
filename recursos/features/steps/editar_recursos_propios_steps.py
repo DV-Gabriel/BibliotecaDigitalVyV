@@ -189,22 +189,6 @@ def step_ensure_user_created_resource(context, usuario, titulo):
     context.recursos[titulo] = recurso
 
 
-@when('{usuario} intenta editar el recurso "{titulo}"')
-def step_user_try_edit_resource(context, usuario, titulo):
-    """Un usuario intenta editar un recurso."""
-    user = context.usuarios.get(usuario)
-    recurso = context.recursos.get(titulo)
-    
-    try:
-        if recurso.propietario != user:
-            context.last_error = PermissionError("Solo el propietario puede modificar")
-            context.last_error_message = "solo el propietario puede modificar el recurso"
-        else:
-            context.last_error = None
-    except Exception as e:
-        context.last_error = e
-        context.last_error_message = str(e)
-
 
 @when('el usuario intenta "{accion}" del recurso "{titulo}"')
 def step_user_try_action(context, accion, titulo):
@@ -241,9 +225,4 @@ def step_verify_changes_rejected(context):
         "Se esperaba un error al guardar"
 
 
-@then('debe indicar que "{mensaje}"')
-def step_verify_error_message(context, mensaje):
-    """Verifica el mensaje de error."""
-    if hasattr(context, 'last_error_message'):
-        assert mensaje.lower() in context.last_error_message.lower(), \
-            f"Mensaje esperado: {mensaje}, obtenido: {context.last_error_message}"
+

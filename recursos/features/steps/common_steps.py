@@ -106,3 +106,19 @@ def step_check_error_message(context, mensaje):
     if hasattr(context, 'last_error_message'):
         assert mensaje.lower() in context.last_error_message.lower(), \
             f"Mensaje esperado: {mensaje}, obtenido: {context.last_error_message}"
+
+
+@then('debe indicar que "{mensaje}"')
+def step_verify_indicate_message_quoted(context, mensaje):
+    """Step genérico para mensajes entre comillas."""
+    if hasattr(context, 'last_error_message'):
+        assert mensaje.lower() in context.last_error_message.lower(), \
+            f"Mensaje esperado: {mensaje}, obtenido: {context.last_error_message}"
+
+
+@then('debe indicar que {mensaje}')
+def step_verify_indicate_message(context, mensaje):
+    """Step genérico para mensajes sin comillas."""
+    if hasattr(context, 'last_error_message'):
+        assert mensaje.lower() in context.last_error_message.lower(), \
+            f"Mensaje esperado: {mensaje}, obtenido: {context.last_error_message}"

@@ -113,27 +113,8 @@ def step_ensure_draft_exists(context, usuario, titulo):
     step_setup_draft_resource(context, titulo, usuario)
 
 
-@when('{usuario} intenta compartir "{titulo}" con {otro_usuario}')
-def step_try_share_draft(context, usuario, titulo, otro_usuario):
-    """Intenta compartir un borrador."""
-    try:
-        recurso = context.recursos.get(titulo)
-        if recurso.estado == RecursoDigital.Estado.BORRADOR:
-            context.last_error = ValueError("No se puede compartir un borrador")
-            context.last_error_message = "el recurso debe completarse y publicarse antes de compartirse"
-        else:
-            context.last_error = None
-    except Exception as e:
-        context.last_error = e
-        context.last_error_message = str(e)
 
 
-@then('debe indicar que {mensaje}')
-def step_verify_message(context, mensaje):
-    """Verifica un mensaje específico."""
-    if hasattr(context, 'last_error_message'):
-        assert mensaje.lower() in context.last_error_message.lower(), \
-            f"Mensaje esperado: {mensaje}, obtenido: {context.last_error_message}"
 
 
 @given('que {usuario} completa título, descripción, categoría y al menos una etiqueta')

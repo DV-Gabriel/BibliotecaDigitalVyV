@@ -22,21 +22,21 @@
             --color-accent: #55a59e;
             --color-background: #f9f9f9;
             --color-white: #ffffff;
-            
+
             /* Colores para recursos originales */
             --color-original-primary: #6c4f7a;
             --color-original-light: #f0eaf5;
             --color-original-gradient: linear-gradient(135deg, #6c4f7a 0%, #8b6fa0 100%);
-            
+
             /* Colores para recursos externos */
             --color-externo-primary: #c4784a;
             --color-externo-light: #f5ede6;
             --color-externo-gradient: linear-gradient(135deg, #c4784a 0%, #e0946a 100%);
-            
+
             /* Colores para estados */
             --color-publicado: #2d8f7e;
             --color-borrador: #8a7a6a;
-            
+
             --shadow-sm: 0 2px 8px rgba(34, 22, 19, 0.08);
             --shadow-md: 0 8px 30px rgba(34, 22, 19, 0.12);
             --shadow-lg: 0 16px 48px rgba(34, 22, 19, 0.16);
@@ -79,6 +79,126 @@
             50% {
                 transform: translateY(-6px);
             }
+        }
+
+        /* --- Top Bar (Usuario) --- */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 0.5rem 0 1.5rem 0;
+            border-bottom: 1px solid #f0ede9;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .top-bar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .top-bar .user-info .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-tertiary) 0%, var(--color-accent) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .top-bar .user-info .user-name {
+            font-weight: 600;
+            color: var(--color-primary);
+            font-size: 0.95rem;
+        }
+
+        .top-bar .user-info .user-rol {
+            font-size: 0.75rem;
+            color: var(--color-secondary);
+            background: var(--color-background);
+            padding: 0.1rem 0.6rem;
+            border-radius: 50px;
+            border: 1px solid #e8e3de;
+        }
+
+        .top-bar .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .top-bar .user-actions .btn-logout {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            cursor: pointer;
+            background: transparent;
+            color: var(--color-secondary);
+            border-color: #e8e3de;
+        }
+
+        .top-bar .user-actions .btn-logout:hover {
+            background: var(--color-danger);
+            color: white;
+            border-color: var(--color-danger);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .top-bar .user-actions .btn-login {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: var(--transition);
+            background: linear-gradient(135deg, var(--color-tertiary) 0%, var(--color-accent) 100%);
+            color: white;
+            border: 2px solid var(--color-tertiary);
+            box-shadow: 0 2px 10px rgba(85, 126, 158, 0.2);
+        }
+
+        .top-bar .user-actions .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(85, 126, 158, 0.3);
+        }
+
+        .top-bar .user-actions .btn-register {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: var(--transition);
+            background: transparent;
+            color: var(--color-secondary);
+            border: 2px solid #e8e3de;
+        }
+
+        .top-bar .user-actions .btn-register:hover {
+            border-color: var(--color-tertiary);
+            color: var(--color-tertiary);
+            transform: translateY(-2px);
         }
 
         /* --- Encabezado --- */
@@ -265,7 +385,7 @@
             background: transparent;
             color: var(--color-secondary);
             border: 2px solid #e8e3de;
-            padding: 0.7rem 1.5rem;
+            padding: 0.4rem 1.5rem;
             border-radius: var(--radius-sm);
             font-weight: 600;
             cursor: pointer;
@@ -305,12 +425,29 @@
             min-height: 320px;
         }
 
-        .resource-card:nth-child(1) { animation-delay: 0.05s; }
-        .resource-card:nth-child(2) { animation-delay: 0.1s; }
-        .resource-card:nth-child(3) { animation-delay: 0.15s; }
-        .resource-card:nth-child(4) { animation-delay: 0.2s; }
-        .resource-card:nth-child(5) { animation-delay: 0.25s; }
-        .resource-card:nth-child(6) { animation-delay: 0.3s; }
+        .resource-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .resource-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .resource-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .resource-card:nth-child(4) {
+            animation-delay: 0.2s;
+        }
+
+        .resource-card:nth-child(5) {
+            animation-delay: 0.25s;
+        }
+
+        .resource-card:nth-child(6) {
+            animation-delay: 0.3s;
+        }
 
         /* --- Estilos por tipo de recurso --- */
         .resource-card.tipo-original {
@@ -696,6 +833,17 @@
 
         /* --- Responsive --- */
         @media (max-width: 768px) {
+            .top-bar {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.8rem;
+            }
+
+            .top-bar .user-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
             .catalog-header h1 {
                 font-size: 2rem;
             }
@@ -754,127 +902,170 @@
                 max-width: 100%;
                 width: 100%;
             }
+
+            .top-bar .user-info .user-rol {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+<div class="container">
+    <!-- Encabezado -->
+    <header class="catalog-header">
+        <h1>
+            <i class="fas fa-book-open"></i>
+            Catálogo de Recursos
+        </h1>
+        <div class="actions">
+            <a href="{% url 'recursos_digitales:crear_original' %}" class="btn btn-primary">
+                <i class="fas fa-pen-fancy"></i> Crear Original
+            </a>
+            <a href="{% url 'recursos_digitales:crear_externo' %}" class="btn btn-outline">
+                <i class="fas fa-link"></i> Registrar Externo
+            </a>
+        </div>
+    </header>
 
-        <!-- Encabezado -->
-          <header class="catalog-header">
-            <h1>
-                <i class="fas fa-book-open"></i>
-                Catálogo de Recursos
-            </h1>
-            <div class="actions">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'espacio_personal:coleccion_lista' %}" class="btn btn-outline">
-                        <i class="fas fa-folder"></i> Mis Colecciones
-                    </a>
-                    <a href="{% url 'espacio_personal:favorito_lista' %}" class="btn btn-outline">
-                        <i class="fas fa-star"></i> Mis Favoritos
-                    </a>
-                {% endif %}
-                <a href="{% url 'recursos_digitales:crear_original' %}" class="btn btn-primary">
-                    <i class="fas fa-pen-fancy"></i> Crear Original
+    <!-- Top Bar - Información del usuario -->
+    <div class="top-bar">
+        <div class="user-info">
+            {% if user.is_authenticated %}
+                <div class="avatar">
+                    {{ user.username|make_list|first|upper }}
+                </div>
+                <div>
+                    <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
+                    <span class="user-rol">{{ user.get_rol_display }}</span>
+                </div>
+            {% else %}
+                <div class="avatar">
+                    <i class="fas fa-user" style="font-size: 1rem;"></i>
+                </div>
+                <span class="user-name" style="color: var(--color-secondary);">Invitado</span>
+            {% endif %}
+        </div>
+        <div class="user-actions">
+            {% if user.is_authenticated %}
+                <a href="{% url 'espacio_personal:coleccion_lista' %}" class="btn btn-outline"
+                   style="padding: 0.4rem 1rem; font-size: 0.8rem;">
+                    <i class="fas fa-folder"></i> Colecciones
                 </a>
-                <a href="{% url 'recursos_digitales:crear_externo' %}" class="btn btn-outline">
-                    <i class="fas fa-link"></i> Registrar Externo
+                <a href="{% url 'espacio_personal:favorito_lista' %}" class="btn btn-outline"
+                   style="padding: 0.4rem 1rem; font-size: 0.8rem;">
+                    <i class="fas fa-star"></i> Favoritos
+                </a>
+                <form method="post" action="{% url 'usuarios:logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-logout">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'usuarios:login' %}" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar sesión
+                </a>
+                <a href="{% url 'usuarios:registro' %}" class="btn-register">
+                    <i class="fas fa-user-plus"></i> Registrarse
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Búsqueda y Filtros -->
+    <section class="search-filters">
+        <form method="get" action="{% url 'recursos_digitales:catalogo' %}">
+            <div class="filter-group" style="flex: 2 1 280px;">
+                <label for="q"><i class="fas fa-search"></i> Buscar</label>
+                <input type="text" name="q" id="q" placeholder="Título, descripción, autor..." value="{{ query }}">
+            </div>
+
+            <div class="filter-group">
+                <label for="categoria"><i class="fas fa-tag"></i> Categoría</label>
+                <select name="categoria" id="categoria">
+                    <option value="">Todas</option>
+                    {% for categoria in categorias %}
+                        <option value="{{ categoria.id }}"
+                                {% if categoria.id|stringformat:"s" == categoria_seleccionada %}selected{% endif %}>
+                            {{ categoria.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="etiqueta"><i class="fas fa-hashtag"></i> Etiqueta</label>
+                <select name="etiqueta" id="etiqueta">
+                    <option value="">Todas</option>
+                    {% for etiqueta in etiquetas %}
+                        <option value="{{ etiqueta.id }}"
+                                {% if etiqueta.id|stringformat:"s" == etiqueta_seleccionada %}selected{% endif %}>
+                            {{ etiqueta.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group" style="flex-direction: row; gap: 0.5rem; align-items: flex-end;">
+                <button type="submit" class="btn-search">
+                    <i class="fas fa-filter"></i> Filtrar
+                </button>
+                <a href="{% url 'recursos_digitales:catalogo' %}" class="btn-clear">
+                    <i class="fas fa-times"></i> Limpiar
                 </a>
             </div>
-        </header>
+        </form>
+    </section>
 
-        <!-- Búsqueda y Filtros -->
-        <section class="search-filters">
-            <form method="get" action="{% url 'recursos_digitales:catalogo' %}">
-                <div class="filter-group" style="flex: 2 1 280px;">
-                    <label for="q"><i class="fas fa-search"></i> Buscar</label>
-                    <input type="text" name="q" id="q" placeholder="Título, descripción, autor..." value="{{ query }}">
-                </div>
-
-                <div class="filter-group">
-                    <label for="categoria"><i class="fas fa-tag"></i> Categoría</label>
-                    <select name="categoria" id="categoria">
-                        <option value="">Todas</option>
-                        {% for categoria in categorias %}
-                            <option value="{{ categoria.id }}" {% if categoria.id|stringformat:"s" == categoria_seleccionada %}selected{% endif %}>
-                                {{ categoria.nombre }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <label for="etiqueta"><i class="fas fa-hashtag"></i> Etiqueta</label>
-                    <select name="etiqueta" id="etiqueta">
-                        <option value="">Todas</option>
-                        {% for etiqueta in etiquetas %}
-                            <option value="{{ etiqueta.id }}" {% if etiqueta.id|stringformat:"s" == etiqueta_seleccionada %}selected{% endif %}>
-                                {{ etiqueta.nombre }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="filter-group" style="flex-direction: row; gap: 0.5rem; align-items: flex-end;">
-                    <button type="submit" class="btn-search">
-                        <i class="fas fa-filter"></i> Filtrar
-                    </button>
-                    <a href="{% url 'recursos_digitales:catalogo' %}" class="btn-clear">
-                        <i class="fas fa-times"></i> Limpiar
-                    </a>
-                </div>
-            </form>
-        </section>
-
-        <!-- Grid de Recursos -->
-        <section class="resources-grid">
-            {% for recurso in recursos %}
-                <article class="resource-card tipo-{{ recurso.tipo }}">
-                    <div class="card-body">
-                        <div class="card-header">
-                            <a href="{% url 'recursos_digitales:detalle' recurso.pk %}" class="card-title">
-                                <i class="fas {% if recurso.tipo == 'original' %}fa-pencil-alt{% else %}fa-book{% endif %} card-icon"></i>
-                                {{ recurso.titulo|truncatechars:50 }}
-                            </a>
-                            <span class="badge-estado {% if recurso.estado == 'publicado' %}badge-publicado{% else %}badge-borrador{% endif %}">
+    <!-- Grid de Recursos -->
+    <section class="resources-grid">
+        {% for recurso in recursos %}
+            <article class="resource-card tipo-{{ recurso.tipo }}">
+                <div class="card-body">
+                    <div class="card-header">
+                        <a href="{% url 'recursos_digitales:detalle' recurso.pk %}" class="card-title">
+                            <i class="fas {% if recurso.tipo == 'original' %}fa-pencil-alt{% else %}fa-book{% endif %} card-icon"></i>
+                            {{ recurso.titulo|truncatechars:50 }}
+                        </a>
+                        <span class="badge-estado {% if recurso.estado == 'publicado' %}badge-publicado{% else %}badge-borrador{% endif %}">
                                 <i class="fas {% if recurso.estado == 'publicado' %}fa-check-circle{% else %}fa-pencil{% endif %}"></i>
                                 {{ recurso.get_estado_display }}
                             </span>
-                        </div>
+                    </div>
 
-                        <p class="card-description">
-                            {{ recurso.descripcion|truncatechars:120 }}
-                        </p>
+                    <p class="card-description">
+                        {{ recurso.descripcion|truncatechars:120 }}
+                    </p>
 
-                        <!-- Badge de tipo - DEBAJO DE LA DESCRIPCIÓN -->
-                        <span class="card-header-badge">
+                    <!-- Badge de tipo - DEBAJO DE LA DESCRIPCIÓN -->
+                    <span class="card-header-badge">
                             <i class="fas {% if recurso.tipo == 'original' %}fa-pen-fancy{% else %}fa-link{% endif %}"></i>
                             {{ recurso.get_tipo_display }}
                         </span>
 
-                        <div class="card-meta">
-                            <span><i class="fas fa-tag"></i> {{ recurso.categoria.nombre|default:"Sin categoría" }}</span>
-                            <span><i class="fas fa-eye"></i> {{ recurso.get_visibilidad_display }}</span>
-                        </div>
-
-                        {% if recurso.etiquetas.all %}
-                            <div class="card-tags">
-                                {% for etiqueta in recurso.etiquetas.all|slice:":5" %}
-                                    <a href="?etiqueta={{ etiqueta.id }}" class="tag">
-                                        #{{ etiqueta.nombre }}
-                                    </a>
-                                {% endfor %}
-                                {% if recurso.etiquetas.count > 5 %}
-                                    <span class="tag" style="background: var(--color-secondary); color: white; border-color: var(--color-secondary);">
-                                        +{{ recurso.etiquetas.count|add:"-5" }}
-                                    </span>
-                                {% endif %}
-                            </div>
-                        {% endif %}
+                    <div class="card-meta">
+                        <span><i class="fas fa-tag"></i> {{ recurso.categoria.nombre|default:"Sin categoría" }}</span>
+                        <span><i class="fas fa-eye"></i> {{ recurso.get_visibilidad_display }}</span>
                     </div>
 
-                    <div class="card-footer">
+                    {% if recurso.etiquetas.all %}
+                        <div class="card-tags">
+                            {% for etiqueta in recurso.etiquetas.all|slice:":5" %}
+                                <a href="?etiqueta={{ etiqueta.id }}" class="tag">
+                                    #{{ etiqueta.nombre }}
+                                </a>
+                            {% endfor %}
+                            {% if recurso.etiquetas.count > 5 %}
+                                <span class="tag"
+                                      style="background: var(--color-secondary); color: white; border-color: var(--color-secondary);">
+                                        +{{ recurso.etiquetas.count|add:"-5" }}
+                                    </span>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="card-footer">
                         <span class="autor">
                             <i class="fas fa-user-circle"></i>
                             <span>
@@ -887,60 +1078,65 @@
                                 {% endif %}
                             </span>
                         </span>
-                        <span class="tipo-badge">
+                    <span class="tipo-badge">
                             <i class="fas fa-{% if recurso.tipo == 'original' %}pencil-alt{% else %}link{% endif %}"></i>
                             {{ recurso.get_tipo_display }}
                         </span>
-                    </div>
-                </article>
-            {% empty %}
-                <div class="empty-state">
-                    <i class="fas fa-box-open"></i>
-                    <h3>No se encontraron recursos</h3>
-                    <p>Intenta con otros filtros o <a href="{% url 'recursos_digitales:crear_original' %}">crea tu primer recurso</a>.</p>
                 </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-box-open"></i>
+                <h3>No se encontraron recursos</h3>
+                <p>Intenta con otros filtros o <a href="{% url 'recursos_digitales:crear_original' %}">crea tu primer
+                    recurso</a>.</p>
+            </div>
+        {% endfor %}
+    </section>
+
+    <!-- Paginación -->
+    {% if page_obj.has_other_pages %}
+        <nav class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if etiqueta_seleccionada %}&etiqueta={{ etiqueta_seleccionada }}{% endif %}">
+                    <i class="fas fa-angle-double-left"></i>
+                </a>
+                <a href="?page=
+                        {{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if etiqueta_seleccionada %}&etiqueta={{ etiqueta_seleccionada }}{% endif %}">
+                    <i class="fas fa-angle-left"></i>
+                </a>
+            {% else %}
+                <span class="disabled"><i class="fas fa-angle-double-left"></i></span>
+                <span class="disabled"><i class="fas fa-angle-left"></i></span>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="current">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page=
+                            {{ num }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if etiqueta_seleccionada %}&etiqueta={{ etiqueta_seleccionada }}{% endif %}">
+                        {{ num }}
+                    </a>
+                {% endif %}
             {% endfor %}
-        </section>
 
-        <!-- Paginación -->
-        {% if page_obj.has_other_pages %}
-            <nav class="pagination">
-                {% if page_obj.has_previous %}
-                    <a href="?page=1{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if etiqueta_seleccionada %}&etiqueta={{ etiqueta_seleccionada }}{% endif %}">
-                        <i class="fas fa-angle-double-left"></i>
-                    </a>
-                    <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if etiqueta_seleccionada %}&etiqueta={{ etiqueta_seleccionada }}{% endif %}">
-                        <i class="fas fa-angle-left"></i>
-                    </a>
-                {% else %}
-                    <span class="disabled"><i class="fas fa-angle-double-left"></i></span>
-                    <span class="disabled"><i class="fas fa-angle-left"></i></span>
-                {% endif %}
+            {% if page_obj.has_next %}
+                <a href="?page=
+                        {{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if etiqueta_seleccionada %}&etiqueta={{ etiqueta_seleccionada }}{% endif %}">
+                    <i class="fas fa-angle-right"></i>
+                </a>
+                <a href="?page=
+                        {{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if etiqueta_seleccionada %}&etiqueta={{ etiqueta_seleccionada }}{% endif %}">
+                    <i class="fas fa-angle-double-right"></i>
+                </a>
+            {% else %}
+                <span class="disabled"><i class="fas fa-angle-right"></i></span>
+                <span class="disabled"><i class="fas fa-angle-double-right"></i></span>
+            {% endif %}
+        </nav>
+    {% endif %}
 
-                {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
-                        <span class="current">{{ num }}</span>
-                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                        <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if etiqueta_seleccionada %}&etiqueta={{ etiqueta_seleccionada }}{% endif %}">
-                            {{ num }}
-                        </a>
-                    {% endif %}
-                {% endfor %}
-
-                {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if etiqueta_seleccionada %}&etiqueta={{ etiqueta_seleccionada }}{% endif %}">
-                        <i class="fas fa-angle-right"></i>
-                    </a>
-                    <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if etiqueta_seleccionada %}&etiqueta={{ etiqueta_seleccionada }}{% endif %}">
-                        <i class="fas fa-angle-double-right"></i>
-                    </a>
-                {% else %}
-                    <span class="disabled"><i class="fas fa-angle-right"></i></span>
-                    <span class="disabled"><i class="fas fa-angle-double-right"></i></span>
-                {% endif %}
-            </nav>
-        {% endif %}
-
-    </div>
+</div>
 </body>
 </html>
