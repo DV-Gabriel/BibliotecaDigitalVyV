@@ -1,0 +1,794 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ recurso.titulo }} - Biblioteca Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- Reset y Variables --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --color-primary: #221613;
+            --color-secondary: #514335;
+            --color-tertiary: #557e9e;
+            --color-accent: #55a59e;
+            --color-background: #f9f9f9;
+            --color-white: #ffffff;
+            
+            /* Colores para recursos originales */
+            --color-original-primary: #6c4f7a;
+            --color-original-light: #f0eaf5;
+            --color-original-gradient: linear-gradient(135deg, #6c4f7a 0%, #8b6fa0 100%);
+            
+            /* Colores para recursos externos */
+            --color-externo-primary: #c4784a;
+            --color-externo-light: #f5ede6;
+            --color-externo-gradient: linear-gradient(135deg, #c4784a 0%, #e0946a 100%);
+            
+            /* Colores para estados */
+            --color-publicado: #2d8f7e;
+            --color-borrador: #8a7a6a;
+            
+            --shadow-sm: 0 2px 8px rgba(34, 22, 19, 0.08);
+            --shadow-md: 0 8px 30px rgba(34, 22, 19, 0.12);
+            --shadow-lg: 0 16px 48px rgba(34, 22, 19, 0.16);
+            --shadow-xl: 0 24px 64px rgba(34, 22, 19, 0.2);
+            --radius: 16px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: var(--color-background);
+            color: var(--color-primary);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* --- Animaciones --- */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        /* --- Breadcrumb / Navegación --- */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: var(--color-secondary);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .breadcrumb a {
+            color: var(--color-tertiary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .breadcrumb a:hover {
+            color: var(--color-accent);
+            text-decoration: underline;
+        }
+
+        .breadcrumb .separator {
+            color: #d0c9c0;
+        }
+
+        .breadcrumb .current {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        /* --- Tarjeta de Detalle --- */
+        .detail-card {
+            background: var(--color-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .detail-card.tipo-original {
+            border-color: rgba(108, 79, 122, 0.2);
+        }
+
+        .detail-card.tipo-externo {
+            border-color: rgba(196, 120, 74, 0.2);
+        }
+
+        /* --- Header del detalle --- */
+        .detail-header {
+            padding: 2rem 2rem 1.5rem;
+            border-bottom: 1px solid #f0ede9;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .detail-header .title-section {
+            flex: 1;
+        }
+
+        .detail-header .title-section h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-header .title-section h1 i {
+            margin-right: 0.5rem;
+        }
+
+        .detail-card.tipo-original .detail-header .title-section h1 {
+            color: #5a3d6a;
+        }
+
+        .detail-card.tipo-externo .detail-header .title-section h1 {
+            color: #b06a3e;
+        }
+
+        .detail-header .title-section .subtitle {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            font-size: 0.9rem;
+            color: var(--color-secondary);
+        }
+
+        .detail-header .title-section .subtitle span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .detail-header .title-section .subtitle i {
+            font-size: 0.8rem;
+        }
+
+        .detail-card.tipo-original .detail-header .title-section .subtitle i {
+            color: var(--color-original-primary);
+        }
+
+        .detail-card.tipo-externo .detail-header .title-section .subtitle i {
+            color: var(--color-externo-primary);
+        }
+
+        .detail-header .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 2px solid transparent;
+        }
+
+        .badge-tipo {
+            color: white;
+        }
+
+        .detail-card.tipo-original .badge-tipo {
+            background: var(--color-original-gradient);
+        }
+
+        .detail-card.tipo-externo .badge-tipo {
+            background: var(--color-externo-gradient);
+        }
+
+        .badge-estado-publicado {
+            background: rgba(45, 143, 126, 0.1);
+            color: var(--color-publicado);
+            border-color: rgba(45, 143, 126, 0.2);
+        }
+
+        .badge-estado-borrador {
+            background: rgba(138, 122, 106, 0.1);
+            color: var(--color-borrador);
+            border-color: rgba(138, 122, 106, 0.2);
+        }
+
+        .badge-visibilidad {
+            background: rgba(85, 126, 158, 0.1);
+            color: var(--color-tertiary);
+            border-color: rgba(85, 126, 158, 0.2);
+        }
+
+        /* --- Cuerpo del detalle --- */
+        .detail-body {
+            padding: 2rem;
+        }
+
+        .detail-body .section {
+            margin-bottom: 2rem;
+        }
+
+        .detail-body .section:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-body .section-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--color-secondary);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-body .section-title i {
+            color: var(--color-tertiary);
+        }
+
+        .detail-body .description {
+            font-size: 1rem;
+            color: var(--color-primary);
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .detail-body .content {
+            background: var(--color-background);
+            padding: 1.5rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            border: 1px solid #f0ede9;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .detail-body .content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .detail-body .content::-webkit-scrollbar-track {
+            background: var(--color-background);
+        }
+
+        .detail-body .content::-webkit-scrollbar-thumb {
+            background: var(--color-tertiary);
+            border-radius: 3px;
+        }
+
+        .detail-body .content::-webkit-scrollbar-thumb:hover {
+            background: var(--color-accent);
+        }
+
+        .detail-body .file-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.5rem;
+            background: var(--color-background);
+            border-radius: var(--radius-sm);
+            color: var(--color-tertiary);
+            text-decoration: none;
+            transition: var(--transition);
+            border: 1px solid #f0ede9;
+        }
+
+        .detail-body .file-link:hover {
+            background: var(--color-tertiary);
+            color: white;
+            border-color: var(--color-tertiary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .detail-body .file-link i {
+            font-size: 1.2rem;
+        }
+
+        .detail-body .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .detail-body .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .detail-body .meta-item .label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-secondary);
+        }
+
+        .detail-body .meta-item .value {
+            font-size: 0.95rem;
+            color: var(--color-primary);
+        }
+
+        .detail-body .meta-item .value a {
+            color: var(--color-tertiary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .detail-body .meta-item .value a:hover {
+            color: var(--color-accent);
+            text-decoration: underline;
+        }
+
+        .detail-body .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .detail-body .tag {
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            background: var(--color-background);
+            color: var(--color-secondary);
+            border: 1px solid #e8e3de;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .detail-card.tipo-original .detail-body .tag:hover {
+            background: var(--color-original-primary);
+            color: white;
+            border-color: var(--color-original-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 79, 122, 0.25);
+        }
+
+        .detail-card.tipo-externo .detail-body .tag:hover {
+            background: var(--color-externo-primary);
+            color: white;
+            border-color: var(--color-externo-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(196, 120, 74, 0.25);
+        }
+
+        /* --- Acciones --- */
+        .detail-actions {
+            padding: 1.5rem 2rem 2rem;
+            border-top: 1px solid #f0ede9;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            background: rgba(249, 249, 249, 0.5);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            cursor: pointer;
+            background: var(--color-white);
+            color: var(--color-secondary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-accent) 0%, #3d8b84 100%);
+            color: var(--color-white);
+            border-color: var(--color-accent);
+            box-shadow: 0 4px 15px rgba(85, 165, 158, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 8px 25px rgba(85, 165, 158, 0.4);
+        }
+
+        .btn-outline {
+            background: var(--color-white);
+            color: var(--color-secondary);
+            border-color: #d0c9c0;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--color-tertiary);
+            color: var(--color-tertiary);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            border-color: #c82333;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: var(--color-primary);
+            border-color: #ffc107;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+            border-color: #e0a800;
+        }
+
+        .btn-success {
+            background: var(--color-publicado);
+            color: white;
+            border-color: var(--color-publicado);
+        }
+
+        .btn-success:hover {
+            background: #1f6b5e;
+            border-color: #1f6b5e;
+        }
+
+        .btn .icon {
+            font-size: 0.9rem;
+        }
+
+        /* --- Mensajes --- */
+        .messages {
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .message {
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            border-left: 4px solid;
+        }
+
+        .message-success {
+            background: rgba(45, 143, 126, 0.1);
+            border-color: var(--color-publicado);
+            color: var(--color-publicado);
+        }
+
+        .message-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        .message-error {
+            background: rgba(220, 53, 69, 0.1);
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .message-info {
+            background: rgba(85, 126, 158, 0.1);
+            border-color: var(--color-tertiary);
+            color: var(--color-tertiary);
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            .detail-header {
+                padding: 1.5rem;
+                flex-direction: column;
+            }
+
+            .detail-header .title-section h1 {
+                font-size: 1.5rem;
+            }
+
+            .detail-body {
+                padding: 1.5rem;
+            }
+
+            .detail-actions {
+                padding: 1.2rem 1.5rem;
+                flex-direction: column;
+            }
+
+            .detail-actions .btn {
+                justify-content: center;
+            }
+
+            .detail-body .meta-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .detail-header .title-section h1 {
+                font-size: 1.3rem;
+            }
+
+            .detail-header .badges {
+                width: 100%;
+            }
+
+            .detail-header .badges .badge {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <a href="{% url 'recursos_digitales:catalogo' %}">
+                <i class="fas fa-home"></i> Catálogo
+            </a>
+            <span class="separator">/</span>
+            <span class="current">{{ recurso.titulo|truncatechars:40 }}</span>
+        </nav>
+
+        <!-- Mensajes -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message message-{{ message.tags }}">
+                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'warning' %}exclamation-triangle{% elif message.tags == 'error' %}times-circle{% else %}info-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Detalle del Recurso -->
+        <article class="detail-card tipo-{{ recurso.tipo }}">
+            <!-- Header -->
+            <header class="detail-header">
+                <div class="title-section">
+                    <h1>
+                        <i class="fas {% if recurso.tipo == 'original' %}fa-pencil-alt{% else %}fa-book{% endif %}"></i>
+                        {{ recurso.titulo }}
+                    </h1>
+                    <div class="subtitle">
+                        <span>
+                            <i class="fas fa-user"></i>
+                            {% if recurso.autor_usuario %}
+                                {{ recurso.autor_usuario.get_full_name|default:recurso.autor_usuario.username }}
+                            {% elif recurso.autor_texto %}
+                                {{ recurso.autor_texto }}
+                            {% else %}
+                                Anónimo
+                            {% endif %}
+                        </span>
+                        <span>
+                            <i class="far fa-calendar-alt"></i>
+                            {{ recurso.fecha_creacion|date:"d/m/Y H:i" }}
+                        </span>
+                        <span>
+                            <i class="fas fa-sync-alt"></i>
+                            {{ recurso.fecha_actualizacion|date:"d/m/Y H:i" }}
+                        </span>
+                    </div>
+                </div>
+                <div class="badges">
+                    <span class="badge badge-tipo">
+                        <i class="fas {% if recurso.tipo == 'original' %}fa-pen-fancy{% else %}fa-link{% endif %}"></i>
+                        {{ recurso.get_tipo_display }}
+                    </span>
+                    <span class="badge {% if recurso.estado == 'publicado' %}badge-estado-publicado{% else %}badge-estado-borrador{% endif %}">
+                        <i class="fas {% if recurso.estado == 'publicado' %}fa-check-circle{% else %}fa-pencil{% endif %}"></i>
+                        {{ recurso.get_estado_display }}
+                    </span>
+                    <span class="badge badge-visibilidad">
+                        <i class="fas fa-eye"></i>
+                        {{ recurso.get_visibilidad_display }}
+                    </span>
+                </div>
+            </header>
+
+            <!-- Body -->
+            <div class="detail-body">
+                <!-- Descripción -->
+                {% if recurso.descripcion %}
+                    <div class="section">
+                        <div class="section-title">
+                            <i class="fas fa-align-left"></i> Descripción
+                        </div>
+                        <div class="description">{{ recurso.descripcion }}</div>
+                    </div>
+                {% endif %}
+
+                <!-- Contenido o Archivo -->
+                {% if recurso.contenido %}
+                    <div class="section">
+                        <div class="section-title">
+                            <i class="fas fa-file-alt"></i> Contenido
+                        </div>
+                        <div class="content">{{ recurso.contenido }}</div>
+                    </div>
+                {% elif recurso.archivo %}
+                    <div class="section">
+                        <div class="section-title">
+                            <i class="fas fa-paperclip"></i> Archivo adjunto
+                        </div>
+                        <a href="{{ recurso.archivo.url }}" class="file-link" target="_blank">
+                            <i class="fas fa-download"></i>
+                            Descargar archivo
+                            <small style="font-weight: 400; opacity: 0.7;">
+                                ({{ recurso.archivo.name|slice:"-10" }})
+                            </small>
+                        </a>
+                    </div>
+                {% endif %}
+
+                <!-- Metadatos -->
+                <div class="section">
+                    <div class="section-title">
+                        <i class="fas fa-info-circle"></i> Información
+                    </div>
+                    <div class="meta-grid">
+                        <div class="meta-item">
+                            <span class="label"><i class="fas fa-tag"></i> Categoría</span>
+                            <span class="value">
+                                {% if recurso.categoria %}
+                                    <a href="{% url 'recursos_digitales:catalogo' %}?categoria={{ recurso.categoria.id }}">
+                                        {{ recurso.categoria.nombre }}
+                                    </a>
+                                {% else %}
+                                    Sin categoría
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="label"><i class="fas fa-user"></i> Propietario</span>
+                            <span class="value">
+                                {{ recurso.propietario.get_full_name|default:recurso.propietario.username }}
+                            </span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="label"><i class="fas fa-user-edit"></i> Autor</span>
+                            <span class="value">
+                                {% if recurso.autor_usuario %}
+                                    {{ recurso.autor_usuario.get_full_name|default:recurso.autor_usuario.username }}
+                                    <small style="color: var(--color-secondary);">(usuario)</small>
+                                {% elif recurso.autor_texto %}
+                                    {{ recurso.autor_texto }}
+                                    <small style="color: var(--color-secondary);">(externo)</small>
+                                {% else %}
+                                    No especificado
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="label"><i class="fas fa-hashtag"></i> Estado</span>
+                            <span class="value">
+                                {{ recurso.get_estado_display }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Etiquetas -->
+                {% if recurso.etiquetas.all %}
+                    <div class="section">
+                        <div class="section-title">
+                            <i class="fas fa-tags"></i> Etiquetas
+                        </div>
+                        <div class="tags">
+                            {% for etiqueta in recurso.etiquetas.all %}
+                                <a href="{% url 'recursos_digitales:catalogo' %}?etiqueta={{ etiqueta.id }}" class="tag">
+                                    #{{ etiqueta.nombre }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Acciones -->
+            <footer class="detail-actions">
+                <!-- Volver al catálogo -->
+                <a href="{% url 'recursos_digitales:catalogo' %}" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> Volver al catálogo
+                </a>
+
+                <!-- Editar (solo propietario) -->
+                {% if user == recurso.propietario %}
+                    <a href="{% url 'recursos_digitales:editar' recurso.pk %}" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Editar recurso
+                    </a>
+                {% endif %}
+
+                <!-- Espacio flexible para separar acciones -->
+                <span style="flex: 1;"></span>
+
+                <!-- Compartir (si está publicado y es propietario) -->
+                {% if user == recurso.propietario and recurso.estado == 'publicado' %}
+                    <button class="btn btn-success" onclick="alert('Funcionalidad de compartir en desarrollo')">
+                        <i class="fas fa-share-alt"></i> Compartir
+                    </button>
+                {% endif %}
+
+                <!-- Agregar a favoritos (si no es propietario) -->
+                {% if user.is_authenticated and user != recurso.propietario %}
+                    <button class="btn btn-warning" onclick="alert('Funcionalidad de favoritos en desarrollo')">
+                        <i class="fas fa-star"></i> Agregar a favoritos
+                    </button>
+                {% endif %}
+
+                <!-- Agregar a colección (si está autenticado) -->
+                {% if user.is_authenticated %}
+                    <button class="btn btn-outline" onclick="alert('Funcionalidad de colecciones en desarrollo')">
+                        <i class="fas fa-folder-plus"></i> Agregar a colección
+                    </button>
+                {% endif %}
+            </footer>
+        </article>
+
+    </div>
+</body>
+</html>

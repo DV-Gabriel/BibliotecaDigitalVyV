@@ -1,10 +1,938 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Recursos - Biblioteca Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- Reset y Variables --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --color-primary: #221613;
+            --color-secondary: #514335;
+            --color-tertiary: #557e9e;
+            --color-accent: #55a59e;
+            --color-background: #f9f9f9;
+            --color-white: #ffffff;
+            
+            /* Colores para recursos originales */
+            --color-original-primary: #6c4f7a;
+            --color-original-light: #f0eaf5;
+            --color-original-gradient: linear-gradient(135deg, #6c4f7a 0%, #8b6fa0 100%);
+            
+            /* Colores para recursos externos */
+            --color-externo-primary: #c4784a;
+            --color-externo-light: #f5ede6;
+            --color-externo-gradient: linear-gradient(135deg, #c4784a 0%, #e0946a 100%);
+            
+            /* Colores para estados */
+            --color-publicado: #2d8f7e;
+            --color-borrador: #8a7a6a;
+            
+            --shadow-sm: 0 2px 8px rgba(34, 22, 19, 0.08);
+            --shadow-md: 0 8px 30px rgba(34, 22, 19, 0.12);
+            --shadow-lg: 0 16px 48px rgba(34, 22, 19, 0.16);
+            --shadow-xl: 0 24px 64px rgba(34, 22, 19, 0.2);
+            --radius: 16px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: var(--color-background);
+            color: var(--color-primary);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* --- Animaciones --- */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        /* --- Encabezado --- */
+        .catalog-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            gap: 1rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .catalog-header h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .catalog-header h1 i {
+            color: var(--color-tertiary);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .catalog-header h1 span {
+            background: linear-gradient(135deg, var(--color-tertiary) 0%, var(--color-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .catalog-header .actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-accent) 0%, #3d8b84 100%);
+            color: var(--color-white);
+            border-color: var(--color-accent);
+            box-shadow: 0 4px 15px rgba(85, 165, 158, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(85, 165, 158, 0.4);
+        }
+
+        .btn-outline {
+            background: var(--color-white);
+            color: var(--color-secondary);
+            border-color: #d0c9c0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-outline:hover {
+            transform: translateY(-3px);
+            border-color: var(--color-tertiary);
+            box-shadow: var(--shadow-md);
+            color: var(--color-tertiary);
+        }
+
+        .btn-outline i {
+            transition: var(--transition);
+        }
+
+        .btn-outline:hover i {
+            transform: rotate(15deg);
+        }
+
+        /* --- Búsqueda y Filtros --- */
+        .search-filters {
+            background: var(--color-white);
+            padding: 1.8rem 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2.5rem;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+            border: 1px solid rgba(85, 126, 158, 0.08);
+            transition: var(--transition);
+        }
+
+        .search-filters:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .search-filters form {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 1.2rem 1.5rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 200px;
+            min-width: 150px;
+        }
+
+        .filter-group label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--color-secondary);
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .filter-group label i {
+            color: var(--color-tertiary);
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 0.7rem 1rem;
+            border: 2px solid #e8e3de;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            background: var(--color-background);
+            transition: var(--transition);
+            color: var(--color-primary);
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--color-tertiary);
+            box-shadow: 0 0 0 4px rgba(85, 126, 158, 0.15);
+            background: var(--color-white);
+        }
+
+        .filter-group input:hover,
+        .filter-group select:hover {
+            border-color: var(--color-tertiary);
+        }
+
+        .filter-group .btn-search {
+            background: linear-gradient(135deg, var(--color-tertiary) 0%, #3e6480 100%);
+            color: white;
+            border: none;
+            padding: 0.7rem 2rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 0.2rem;
+            box-shadow: 0 4px 15px rgba(85, 126, 158, 0.25);
+        }
+
+        .filter-group .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(85, 126, 158, 0.35);
+        }
+
+        .filter-group .btn-search:active {
+            transform: scale(0.98);
+        }
+
+        .filter-group .btn-clear {
+            background: transparent;
+            color: var(--color-secondary);
+            border: 2px solid #e8e3de;
+            padding: 0.7rem 1.5rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 0.2rem;
+        }
+
+        .filter-group .btn-clear:hover {
+            background: var(--color-background);
+            border-color: var(--color-secondary);
+            transform: translateY(-2px);
+        }
+
+        /* --- Grid de Recursos --- */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        /* --- Tarjetas de Recursos --- */
+        .resource-card {
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            animation: fadeInUp 0.6s ease-out both;
+            position: relative;
+            background: var(--color-white);
+            box-shadow: var(--shadow-sm);
+            border: 2px solid transparent;
+            will-change: transform;
+            backface-visibility: hidden;
+            height: 100%;
+            min-height: 320px;
+        }
+
+        .resource-card:nth-child(1) { animation-delay: 0.05s; }
+        .resource-card:nth-child(2) { animation-delay: 0.1s; }
+        .resource-card:nth-child(3) { animation-delay: 0.15s; }
+        .resource-card:nth-child(4) { animation-delay: 0.2s; }
+        .resource-card:nth-child(5) { animation-delay: 0.25s; }
+        .resource-card:nth-child(6) { animation-delay: 0.3s; }
+
+        /* --- Estilos por tipo de recurso --- */
+        .resource-card.tipo-original {
+            border-color: rgba(108, 79, 122, 0.2);
+        }
+
+        .resource-card.tipo-original:hover {
+            border-color: var(--color-original-primary);
+            box-shadow: 0 8px 30px rgba(108, 79, 122, 0.2);
+            transform: translateY(-6px);
+        }
+
+        .resource-card.tipo-original .card-header-badge {
+            background: var(--color-original-gradient);
+            color: white;
+        }
+
+        .resource-card.tipo-original .card-title {
+            color: #5a3d6a;
+        }
+
+        .resource-card.tipo-original .card-title:hover {
+            color: #7a5a8a;
+        }
+
+        .resource-card.tipo-original .card-icon {
+            color: var(--color-original-primary);
+        }
+
+        .resource-card.tipo-externo {
+            border-color: rgba(196, 120, 74, 0.2);
+        }
+
+        .resource-card.tipo-externo:hover {
+            border-color: var(--color-externo-primary);
+            box-shadow: 0 8px 30px rgba(196, 120, 74, 0.2);
+            transform: translateY(-6px);
+        }
+
+        .resource-card.tipo-externo .card-header-badge {
+            background: var(--color-externo-gradient);
+            color: white;
+        }
+
+        .resource-card.tipo-externo .card-title {
+            color: #b06a3e;
+        }
+
+        .resource-card.tipo-externo .card-title:hover {
+            color: #d48454;
+        }
+
+        .resource-card.tipo-externo .card-icon {
+            color: var(--color-externo-primary);
+        }
+
+        /* --- Badge de tipo - Debajo de la descripción --- */
+        .resource-card .card-header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin: 0.0rem 0 0.6rem 0;
+            align-self: flex-start;
+            width: fit-content;
+        }
+
+        .resource-card .card-body {
+            padding: 1.5rem 1.5rem 0.8rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .resource-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+            gap: 0.5rem;
+        }
+
+        .resource-card .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-decoration: none;
+            line-height: 1.3;
+            transition: var(--transition);
+            flex: 1;
+            letter-spacing: -0.3px;
+        }
+
+        .resource-card .card-title i {
+            margin-right: 0.4rem;
+            font-size: 0.9rem;
+        }
+
+        .resource-card .badge-estado {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.25rem 0.8rem;
+            border-radius: 50px;
+            white-space: nowrap;
+            transition: var(--transition);
+            flex-shrink: 0;
+            border: 2px solid transparent;
+        }
+
+        .badge-publicado {
+            background: rgba(45, 143, 126, 0.1);
+            color: var(--color-publicado);
+            border-color: rgba(45, 143, 126, 0.2);
+        }
+
+        .badge-publicado i {
+            color: var(--color-publicado);
+        }
+
+        .badge-borrador {
+            background: rgba(138, 122, 106, 0.1);
+            color: var(--color-borrador);
+            border-color: rgba(138, 122, 106, 0.2);
+        }
+
+        .badge-borrador i {
+            color: var(--color-borrador);
+        }
+
+        .resource-card .card-description {
+            color: var(--color-secondary);
+            font-size: 0.9rem;
+            margin: 0.6rem 0 0rem;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.5;
+            min-height: 4.2rem;
+        }
+
+        .resource-card .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem 1rem;
+            font-size: 0.8rem;
+            color: var(--color-secondary);
+            margin-bottom: 0.6rem;
+            border-top: 1px solid #f0ede9;
+            padding-top: 0.8rem;
+        }
+
+        .resource-card .card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: var(--transition);
+        }
+
+        .resource-card .card-meta span:hover {
+            color: var(--color-primary);
+        }
+
+        .resource-card .card-meta i {
+            font-size: 0.7rem;
+        }
+
+        .resource-card.tipo-original .card-meta i {
+            color: var(--color-original-primary);
+        }
+
+        .resource-card.tipo-externo .card-meta i {
+            color: var(--color-externo-primary);
+        }
+
+        .resource-card .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.4rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .resource-card .tag {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.8rem;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: var(--transition);
+            border: 1px solid #e8e3de;
+            background: var(--color-background);
+            color: var(--color-secondary);
+        }
+
+        .resource-card.tipo-original .tag:hover {
+            background: var(--color-original-primary);
+            color: white;
+            border-color: var(--color-original-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 79, 122, 0.25);
+        }
+
+        .resource-card.tipo-externo .tag:hover {
+            background: var(--color-externo-primary);
+            color: white;
+            border-color: var(--color-externo-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(196, 120, 74, 0.25);
+        }
+
+        /* --- Footer de la tarjeta --- */
+        .resource-card .card-footer {
+            padding: 0.8rem 1.5rem 1.2rem;
+            border-top: 1px solid #f0ede9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--color-secondary);
+            background: rgba(249, 249, 249, 0.5);
+            transition: var(--transition);
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+
+        .resource-card.tipo-original:hover .card-footer {
+            background: rgba(108, 79, 122, 0.05);
+        }
+
+        .resource-card.tipo-externo:hover .card-footer {
+            background: rgba(196, 120, 74, 0.05);
+        }
+
+        .resource-card .card-footer .autor {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            max-width: 60%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .resource-card .card-footer .autor i {
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .resource-card.tipo-original .card-footer .autor i {
+            color: var(--color-original-primary);
+        }
+
+        .resource-card.tipo-externo .card-footer .autor i {
+            color: var(--color-externo-primary);
+        }
+
+        .resource-card .card-footer .autor span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .resource-card .card-footer .tipo-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            background: var(--color-background);
+            border: 1px solid #e8e3de;
+            flex-shrink: 0;
+        }
+
+        .resource-card.tipo-original .card-footer .tipo-badge {
+            color: var(--color-original-primary);
+            border-color: rgba(108, 79, 122, 0.2);
+        }
+
+        .resource-card.tipo-externo .card-footer .tipo-badge {
+            color: var(--color-externo-primary);
+            border-color: rgba(196, 120, 74, 0.2);
+        }
+
+        /* --- Paginación --- */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        .pagination a,
+        .pagination .current {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.6rem;
+            height: 2.6rem;
+            padding: 0 0.8rem;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            background: var(--color-white);
+            color: var(--color-primary);
+            box-shadow: var(--shadow-sm);
+            border: 2px solid transparent;
+        }
+
+        .pagination a:hover {
+            background: var(--color-tertiary);
+            color: var(--color-white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--color-tertiary);
+        }
+
+        .pagination .current {
+            background: linear-gradient(135deg, var(--color-accent) 0%, #3d8b84 100%);
+            color: var(--color-white);
+            box-shadow: 0 4px 15px rgba(85, 165, 158, 0.3);
+        }
+
+        .pagination .disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* --- Mensaje sin resultados --- */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--color-secondary);
+            grid-column: 1 / -1;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #d0c9c0;
+            margin-bottom: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .empty-state h3 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            max-width: 400px;
+            margin: 0 auto;
+            color: var(--color-secondary);
+        }
+
+        .empty-state a {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .empty-state a:hover {
+            color: var(--color-tertiary);
+            text-decoration: underline;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            .catalog-header h1 {
+                font-size: 2rem;
+            }
+
+            .search-filters {
+                padding: 1.2rem;
+            }
+
+            .search-filters form {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .filter-group {
+                flex: 1 1 auto;
+                width: 100%;
+            }
+
+            .filter-group .btn-search,
+            .filter-group .btn-clear {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .resources-grid {
+                grid-template-columns: 1fr;
+                gap: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .catalog-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .catalog-header .actions {
+                flex-direction: column;
+            }
+
+            .catalog-header .actions .btn {
+                justify-content: center;
+            }
+
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .resource-card .card-footer {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
+
+            .resource-card .card-footer .autor {
+                max-width: 100%;
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
 
+        <!-- Encabezado -->
+        <header class="catalog-header">
+            <h1>
+                <i class="fas fa-book-open"></i>
+                <span>Catálogo de Recursos</span>
+            </h1>
+            <div class="actions">
+                <a href="{% url 'recursos_digitales:crear_original' %}" class="btn btn-primary">
+                    <i class="fas fa-pen-fancy"></i> Crear Original
+                </a>
+                <a href="{% url 'recursos_digitales:crear_externo' %}" class="btn btn-outline">
+                    <i class="fas fa-link"></i> Registrar Externo
+                </a>
+            </div>
+        </header>
+
+        <!-- Búsqueda y Filtros -->
+        <section class="search-filters">
+            <form method="get" action="{% url 'recursos_digitales:catalogo' %}">
+                <div class="filter-group" style="flex: 2 1 280px;">
+                    <label for="q"><i class="fas fa-search"></i> Buscar</label>
+                    <input type="text" name="q" id="q" placeholder="Título, descripción, autor..." value="{{ query }}">
+                </div>
+
+                <div class="filter-group">
+                    <label for="categoria"><i class="fas fa-tag"></i> Categoría</label>
+                    <select name="categoria" id="categoria">
+                        <option value="">Todas</option>
+                        {% for categoria in categorias %}
+                            <option value="{{ categoria.id }}" {% if categoria.id|stringformat:"s" == categoria_seleccionada %}selected{% endif %}>
+                                {{ categoria.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="etiqueta"><i class="fas fa-hashtag"></i> Etiqueta</label>
+                    <select name="etiqueta" id="etiqueta">
+                        <option value="">Todas</option>
+                        {% for etiqueta in etiquetas %}
+                            <option value="{{ etiqueta.id }}" {% if etiqueta.id|stringformat:"s" == etiqueta_seleccionada %}selected{% endif %}>
+                                {{ etiqueta.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group" style="flex-direction: row; gap: 0.5rem; align-items: flex-end;">
+                    <button type="submit" class="btn-search">
+                        <i class="fas fa-filter"></i> Filtrar
+                    </button>
+                    <a href="{% url 'recursos_digitales:catalogo' %}" class="btn-clear">
+                        <i class="fas fa-times"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </section>
+
+        <!-- Grid de Recursos -->
+        <section class="resources-grid">
+            {% for recurso in recursos %}
+                <article class="resource-card tipo-{{ recurso.tipo }}">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <a href="{% url 'recursos_digitales:detalle' recurso.pk %}" class="card-title">
+                                <i class="fas {% if recurso.tipo == 'original' %}fa-pencil-alt{% else %}fa-book{% endif %} card-icon"></i>
+                                {{ recurso.titulo|truncatechars:50 }}
+                            </a>
+                            <span class="badge-estado {% if recurso.estado == 'publicado' %}badge-publicado{% else %}badge-borrador{% endif %}">
+                                <i class="fas {% if recurso.estado == 'publicado' %}fa-check-circle{% else %}fa-pencil{% endif %}"></i>
+                                {{ recurso.get_estado_display }}
+                            </span>
+                        </div>
+
+                        <p class="card-description">
+                            {{ recurso.descripcion|truncatechars:120 }}
+                        </p>
+
+                        <!-- Badge de tipo - DEBAJO DE LA DESCRIPCIÓN -->
+                        <span class="card-header-badge">
+                            <i class="fas {% if recurso.tipo == 'original' %}fa-pen-fancy{% else %}fa-link{% endif %}"></i>
+                            {{ recurso.get_tipo_display }}
+                        </span>
+
+                        <div class="card-meta">
+                            <span><i class="fas fa-tag"></i> {{ recurso.categoria.nombre|default:"Sin categoría" }}</span>
+                            <span><i class="fas fa-eye"></i> {{ recurso.get_visibilidad_display }}</span>
+                        </div>
+
+                        {% if recurso.etiquetas.all %}
+                            <div class="card-tags">
+                                {% for etiqueta in recurso.etiquetas.all|slice:":5" %}
+                                    <a href="?etiqueta={{ etiqueta.id }}" class="tag">
+                                        #{{ etiqueta.nombre }}
+                                    </a>
+                                {% endfor %}
+                                {% if recurso.etiquetas.count > 5 %}
+                                    <span class="tag" style="background: var(--color-secondary); color: white; border-color: var(--color-secondary);">
+                                        +{{ recurso.etiquetas.count|add:"-5" }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-footer">
+                        <span class="autor">
+                            <i class="fas fa-user-circle"></i>
+                            <span>
+                                {% if recurso.autor_usuario %}
+                                    {{ recurso.autor_usuario.username }}
+                                {% elif recurso.autor_texto %}
+                                    {{ recurso.autor_texto }}
+                                {% else %}
+                                    Anónimo
+                                {% endif %}
+                            </span>
+                        </span>
+                        <span class="tipo-badge">
+                            <i class="fas fa-{% if recurso.tipo == 'original' %}pencil-alt{% else %}link{% endif %}"></i>
+                            {{ recurso.get_tipo_display }}
+                        </span>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-box-open"></i>
+                    <h3>No se encontraron recursos</h3>
+                    <p>Intenta con otros filtros o <a href="{% url 'recursos_digitales:crear_original' %}">crea tu primer recurso</a>.</p>
+                </div>
+            {% endfor %}
+        </section>
+
+        <!-- Paginación -->
+        {% if page_obj.has_other_pages %}
+            <nav class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if etiqueta_seleccionada %}&etiqueta={{ etiqueta_seleccionada }}{% endif %}">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if etiqueta_seleccionada %}&etiqueta={{ etiqueta_seleccionada }}{% endif %}">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                {% else %}
+                    <span class="disabled"><i class="fas fa-angle-double-left"></i></span>
+                    <span class="disabled"><i class="fas fa-angle-left"></i></span>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <span class="current">{{ num }}</span>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if etiqueta_seleccionada %}&etiqueta={{ etiqueta_seleccionada }}{% endif %}">
+                            {{ num }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if etiqueta_seleccionada %}&etiqueta={{ etiqueta_seleccionada }}{% endif %}">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if etiqueta_seleccionada %}&etiqueta={{ etiqueta_seleccionada }}{% endif %}">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                {% else %}
+                    <span class="disabled"><i class="fas fa-angle-right"></i></span>
+                    <span class="disabled"><i class="fas fa-angle-double-right"></i></span>
+                {% endif %}
+            </nav>
+        {% endif %}
+
+    </div>
 </body>
 </html>

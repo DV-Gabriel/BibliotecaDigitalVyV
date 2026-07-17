@@ -16,7 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.urls import include, path
+from django.shortcuts import redirect
 
+def inicio(request):
+    return redirect('recursos/')
 urlpatterns = [
+    path('', inicio),
     path('admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('recursos/', include('recursos_digitales.urls')),
+    path('espacio/', include('espacio_personal.urls')),
+    path('interacciones/', include('interacciones.urls')),
 ]
+

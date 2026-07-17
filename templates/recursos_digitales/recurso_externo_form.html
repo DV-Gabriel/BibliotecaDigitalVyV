@@ -1,10 +1,702 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Recurso Externo - Biblioteca Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- Reset y Variables --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --color-primary: #221613;
+            --color-secondary: #514335;
+            --color-tertiary: #557e9e;
+            --color-accent: #55a59e;
+            --color-background: #f9f9f9;
+            --color-white: #ffffff;
+            --color-externo-primary: #c4784a;
+            --color-success: #2d8f7e;
+            --color-danger: #dc3545;
+            
+            --shadow-sm: 0 2px 8px rgba(34, 22, 19, 0.08);
+            --shadow-md: 0 8px 30px rgba(34, 22, 19, 0.12);
+            --shadow-lg: 0 16px 48px rgba(34, 22, 19, 0.16);
+            --radius: 16px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: var(--color-background);
+            color: var(--color-primary);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* --- Animaciones --- */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        /* --- Breadcrumb --- */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: var(--color-secondary);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .breadcrumb a {
+            color: var(--color-tertiary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .breadcrumb a:hover {
+            color: var(--color-accent);
+            text-decoration: underline;
+        }
+
+        .breadcrumb .separator {
+            color: #d0c9c0;
+        }
+
+        .breadcrumb .current {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        /* --- Header del formulario --- */
+        .form-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out 0.05s both;
+        }
+
+        .form-header .icon-wrapper {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            background: linear-gradient(135deg, #c4784a 0%, #e0946a 100%);
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(196, 120, 74, 0.3);
+        }
+
+        .form-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .form-header p {
+            color: var(--color-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* --- Tarjeta del formulario --- */
+        .form-card {
+            background: var(--color-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+            border: 2px solid rgba(196, 120, 74, 0.15);
+        }
+
+        .form-card .form-body {
+            padding: 2rem;
+        }
+
+        /* --- Estilos de campos --- */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--color-primary);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-group label .required {
+            color: var(--color-danger);
+            margin-left: 0.2rem;
+        }
+
+        .form-group label .help-icon {
+            color: var(--color-tertiary);
+            font-size: 0.8rem;
+            cursor: help;
+        }
+
+        .form-group .help-text {
+            font-size: 0.8rem;
+            color: var(--color-secondary);
+            margin-top: 0.3rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e8e3de;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background: var(--color-background);
+            color: var(--color-primary);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--color-externo-primary);
+            box-shadow: 0 0 0 4px rgba(196, 120, 74, 0.12);
+            background: var(--color-white);
+        }
+
+        .form-group input:hover,
+        .form-group select:hover,
+        .form-group textarea:hover {
+            border-color: var(--color-externo-primary);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* --- Checkbox Select Multiple (Etiquetas) --- */
+        .form-group .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.5rem;
+            padding: 0.8rem;
+            background: var(--color-background);
+            border-radius: var(--radius-sm);
+            border: 2px solid #e8e3de;
+            max-height: 200px;
+            overflow-y: auto;
+            transition: var(--transition);
+        }
+
+        .form-group .checkbox-grid:focus-within {
+            border-color: var(--color-externo-primary);
+            box-shadow: 0 0 0 4px rgba(196, 120, 74, 0.12);
+        }
+
+        .form-group .checkbox-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .form-group .checkbox-grid::-webkit-scrollbar-track {
+            background: var(--color-background);
+        }
+
+        .form-group .checkbox-grid::-webkit-scrollbar-thumb {
+            background: var(--color-tertiary);
+            border-radius: 3px;
+        }
+
+        .form-group .checkbox-grid label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 400;
+            font-size: 0.85rem;
+            padding: 0.3rem 0.5rem;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .form-group .checkbox-grid label:hover {
+            background: rgba(196, 120, 74, 0.05);
+        }
+
+        .form-group .checkbox-grid input[type="checkbox"] {
+            width: auto;
+            padding: 0;
+            margin: 0;
+            accent-color: var(--color-externo-primary);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* --- Campos en fila --- */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* --- Archivo --- */
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            padding: 0.6rem;
+            background: var(--color-background);
+            border: 2px dashed #e8e3de;
+            cursor: pointer;
+        }
+
+        .file-input-wrapper input[type="file"]:hover {
+            border-color: var(--color-externo-primary);
+            background: rgba(196, 120, 74, 0.03);
+        }
+
+        .file-input-wrapper input[type="file"]::file-selector-button {
+            padding: 0.4rem 1rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: var(--color-externo-primary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-right: 1rem;
+        }
+
+        .file-input-wrapper input[type="file"]::file-selector-button:hover {
+            background: #b06a3e;
+        }
+
+        /* --- Botones --- */
+        .form-actions {
+            padding: 1.5rem 2rem 2rem;
+            border-top: 1px solid #f0ede9;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            background: rgba(249, 249, 249, 0.5);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #c4784a 0%, #e0946a 100%);
+            color: var(--color-white);
+            border-color: #c4784a;
+            box-shadow: 0 4px 15px rgba(196, 120, 74, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 8px 25px rgba(196, 120, 74, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--color-success) 0%, #1f6b5e 100%);
+            color: var(--color-white);
+            border-color: var(--color-success);
+            box-shadow: 0 4px 15px rgba(45, 143, 126, 0.3);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 8px 25px rgba(45, 143, 126, 0.4);
+        }
+
+        .btn-outline {
+            background: var(--color-white);
+            color: var(--color-secondary);
+            border-color: #d0c9c0;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--color-tertiary);
+            color: var(--color-tertiary);
+        }
+
+        .btn-danger {
+            background: var(--color-danger);
+            color: white;
+            border-color: var(--color-danger);
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            border-color: #c82333;
+        }
+
+        /* --- Errores del formulario --- */
+        .form-errors {
+            background: rgba(220, 53, 69, 0.08);
+            border-left: 4px solid var(--color-danger);
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-errors ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .form-errors li {
+            color: #721c24;
+            font-size: 0.9rem;
+            padding: 0.2rem 0;
+        }
+
+        .form-errors li::before {
+            content: "⚠ ";
+        }
+
+        .field-error {
+            color: var(--color-danger);
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .field-error::before {
+            content: "⚠ ";
+        }
+
+        .form-group.has-error input,
+        .form-group.has-error select,
+        .form-group.has-error textarea {
+            border-color: var(--color-danger);
+            background: rgba(220, 53, 69, 0.03);
+        }
+
+        .form-group.has-error input:focus,
+        .form-group.has-error select:focus,
+        .form-group.has-error textarea:focus {
+            box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.12);
+        }
+
+        .form-group.has-error .checkbox-grid {
+            border-color: var(--color-danger);
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .form-row-3 {
+                grid-template-columns: 1fr 1fr;
+                gap: 0;
+            }
+
+            .form-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .form-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .form-card .form-body {
+                padding: 1.5rem;
+            }
+
+            .form-actions {
+                padding: 1.2rem 1.5rem;
+                flex-direction: column;
+            }
+
+            .form-actions .btn {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .form-group .checkbox-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group .checkbox-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-header .icon-wrapper {
+                width: 48px;
+                height: 48px;
+                font-size: 1.4rem;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
 
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <a href="{% url 'recursos_digitales:catalogo' %}">
+                <i class="fas fa-home"></i> Catálogo
+            </a>
+            <span class="separator">/</span>
+            <span class="current">Registrar Recurso Externo</span>
+        </nav>
+
+        <!-- Header -->
+        <header class="form-header">
+            <div class="icon-wrapper">
+                <i class="fas fa-link"></i>
+            </div>
+            <div>
+                <h1>Registrar Recurso Externo</h1>
+                <p>Registra un recurso educativo creado por un autor externo al sistema.</p>
+            </div>
+        </header>
+
+        <!-- Formulario -->
+        <form method="post" class="form-card" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            <div class="form-body">
+
+                <!-- Errores generales -->
+                {% if form.non_field_errors %}
+                    <div class="form-errors">
+                        <ul>
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <!-- Título -->
+                <div class="form-group {% if form.titulo.errors %}has-error{% endif %}">
+                    <label for="{{ form.titulo.id_for_label }}">
+                        Título <span class="required">*</span>
+                    </label>
+                    {{ form.titulo }}
+                    {% if form.titulo.help_text %}
+                        <div class="help-text">{{ form.titulo.help_text }}</div>
+                    {% endif %}
+                    {% if form.titulo.errors %}
+                        <div class="field-error">{{ form.titulo.errors|join:", " }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Descripción -->
+                <div class="form-group {% if form.descripcion.errors %}has-error{% endif %}">
+                    <label for="{{ form.descripcion.id_for_label }}">
+                        Descripción <span class="required">*</span>
+                    </label>
+                    {{ form.descripcion }}
+                    {% if form.descripcion.help_text %}
+                        <div class="help-text">{{ form.descripcion.help_text }}</div>
+                    {% endif %}
+                    {% if form.descripcion.errors %}
+                        <div class="field-error">{{ form.descripcion.errors|join:", " }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Autor (externo o usuario) -->
+                <div class="form-row">
+                    <div class="form-group {% if form.autor_texto.errors %}has-error{% endif %}">
+                        <label for="{{ form.autor_texto.id_for_label }}">
+                            Autor Externo
+                            <span class="help-icon" title="Nombre del autor original si no está registrado en el sistema">ⓘ</span>
+                        </label>
+                        {{ form.autor_texto }}
+                        <div class="help-text">Nombre del autor original (ej: "Gabriel García Márquez").</div>
+                        {% if form.autor_texto.errors %}
+                            <div class="field-error">{{ form.autor_texto.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group {% if form.autor_usuario.errors %}has-error{% endif %}">
+                        <label for="{{ form.autor_usuario.id_for_label }}">
+                            Autor Usuario
+                            <span class="help-icon" title="Selecciona un usuario registrado como autor">ⓘ</span>
+                        </label>
+                        {{ form.autor_usuario }}
+                        <div class="help-text">O selecciona un usuario registrado como autor.</div>
+                        {% if form.autor_usuario.errors %}
+                            <div class="field-error">{{ form.autor_usuario.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Archivo -->
+                <div class="form-group {% if form.archivo.errors %}has-error{% endif %}">
+                    <label for="{{ form.archivo.id_for_label }}">
+                        Archivo
+                        <span class="help-icon" title="Sube el archivo del recurso (opcional)">ⓘ</span>
+                    </label>
+                    <div class="file-input-wrapper">
+                        {{ form.archivo }}
+                    </div>
+                    <div class="help-text">Puedes subir un archivo (PDF, DOC, etc.) asociado al recurso.</div>
+                    {% if form.archivo.errors %}
+                        <div class="field-error">{{ form.archivo.errors|join:", " }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Categoría y Visibilidad -->
+                <div class="form-row">
+                    <div class="form-group {% if form.categoria.errors %}has-error{% endif %}">
+                        <label for="{{ form.categoria.id_for_label }}">
+                            Categoría <span class="required">*</span>
+                        </label>
+                        {{ form.categoria }}
+                        {% if form.categoria.help_text %}
+                            <div class="help-text">{{ form.categoria.help_text }}</div>
+                        {% endif %}
+                        {% if form.categoria.errors %}
+                            <div class="field-error">{{ form.categoria.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group {% if form.visibilidad.errors %}has-error{% endif %}">
+                        <label for="{{ form.visibilidad.id_for_label }}">
+                            Visibilidad
+                        </label>
+                        {{ form.visibilidad }}
+                        <div class="help-text">¿Quieres que otros usuarios puedan ver este recurso?</div>
+                        {% if form.visibilidad.errors %}
+                            <div class="field-error">{{ form.visibilidad.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Estado y Etiquetas -->
+                <div class="form-row">
+                    <div class="form-group {% if form.estado.errors %}has-error{% endif %}">
+                        <label for="{{ form.estado.id_for_label }}">
+                            Estado
+                        </label>
+                        {{ form.estado }}
+                        <div class="help-text">
+                            <strong>Borrador:</strong> solo visible para ti.<br>
+                            <strong>Publicado:</strong> visible según la visibilidad seleccionada.
+                        </div>
+                        {% if form.estado.errors %}
+                            <div class="field-error">{{ form.estado.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group {% if form.etiquetas.errors %}has-error{% endif %}">
+                        <label>
+                            Etiquetas <span class="required">*</span>
+                            <span class="help-icon" title="Selecciona al menos una etiqueta para publicar">ⓘ</span>
+                        </label>
+                        <div class="checkbox-grid">
+                            {{ form.etiquetas }}
+                        </div>
+                        <div class="help-text">Selecciona las etiquetas que mejor describan tu recurso.</div>
+                        {% if form.etiquetas.errors %}
+                            <div class="field-error">{{ form.etiquetas.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Acciones -->
+            <div class="form-actions">
+                <a href="{% url 'recursos_digitales:catalogo' %}" class="btn btn-outline">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+                <span style="flex: 1;"></span>
+                <button type="submit" name="save_draft" value="1" class="btn btn-outline">
+                    <i class="fas fa-save"></i> Guardar Borrador
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-link"></i> Registrar Recurso
+                </button>
+            </div>
+
+        </form>
+
+    </div>
 </body>
 </html>

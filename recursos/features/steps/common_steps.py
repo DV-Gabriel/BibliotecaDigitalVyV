@@ -1,0 +1,108 @@
+"""
+Steps comunes para todas las features (autenticación, creación de usuarios, etc.).
+"""
+from behave import given, when, then
+from django.contrib.auth import get_user_model
+from recursos_digitales.models import RecursoDigital, Categoria, Etiqueta
+
+User = get_user_model()
+
+
+@given('que existen los usuarios "{nombres}"')
+def step_create_multiple_users(context, nombres):
+    """Crea múltiples usuarios separados por comas."""
+    user_list = [n.strip().strip('"') for n in nombres.split(',')]
+    context.usuarios = {}
+    for name in user_list:
+        try:
+            user = User.objects.get(username=name.lower())
+        except User.DoesNotExist:
+            user = User.objects.create_user(
+                username=name.lower(),
+                password='test123',
+                first_name=name,
+            )
+        context.usuarios[name] = user
+
+
+@given('que soy un usuario autenticado en el sistema')
+def step_authenticate_user(context):
+    """Autentica al usuario actual."""
+    if not hasattr(context, 'usuario_actual'):
+        user = User.objects.create_user(
+            username='usuario_test',
+            password='test123',
+            first_name='Usuario',
+        )
+        context.usuario_actual = user
+    context.client.force_login(context.usuario_actual)
+
+
+@given('el usuario "{nombre}" está autenticado en el sistema')
+def step_authenticate_specific_user(context, nombre):
+    """Autentica un usuario específico."""
+    try:
+        user = User.objects.get(username=nombre.lower())
+    except User.DoesNotExist:
+        user = User.objects.create_user(
+            username=nombre.lower(),
+            password='test123',
+            first_name=nombre,
+        )
+    context.usuario_actual = user
+    context.client.force_login(user)
+
+
+@given('existe el usuario "{nombre}"')
+def step_ensure_user_exists(context, nombre):
+    """Asegura que existe un usuario."""
+    try:
+        user = User.objects.get(username=nombre.lower())
+    except User.DoesNotExist:
+        user = User.objects.create_user(
+            username=nombre.lower(),
+            password='test123',
+            first_name=nombre,
+        )
+    if not hasattr(context, 'usuarios'):
+        context.usuarios = {}
+    context.usuarios[nombre] = user
+
+
+@then('el usuario "{nombre}" debe tener acceso al recurso "{titulo}"')
+def step_user_has_access(context, nombre, titulo):
+    """Verifica que un usuario tiene acceso a un recurso."""
+    usuario = context.usuarios.get(nombre)
+    assert usuario is not None, f"Usuario {nombre} no existe"
+    
+    recurso = RecursoDigital.objects.get(titulo=titulo)
+    # Verificar acceso mediante la queryset visibles_para
+    recursos_visibles = RecursoDigital.objects.visibles_para(usuario)
+    assert recurso in recursos_visibles, f"{nombre} no tiene acceso a {titulo}"
+
+
+@then('el usuario "{nombre}" no debe tener acceso al recurso "{titulo}"')
+def step_user_no_access(context, nombre, titulo):
+    """Verifica que un usuario NO tiene acceso a un recurso."""
+    usuario = context.usuarios.get(nombre)
+    assert usuario is not None, f"Usuario {nombre} no existe"
+    
+    recurso = RecursoDigital.objects.get(titulo=titulo)
+    recursos_visibles = RecursoDigital.objects.visibles_para(usuario)
+    assert recurso not in recursos_visibles, f"{nombre} tiene acceso inesperado a {titulo}"
+
+
+@then('el sistema debe rechazar la acción')
+def step_action_rejected(context):
+    """Verifica que la última acción fue rechazada."""
+    if not hasattr(context, 'last_error'):
+        raise AssertionError("Se esperaba un error pero la acción fue exitosa")
+    assert context.last_error is not None
+
+
+@then('debe mostrar un mensaje indicando que {mensaje}')
+def step_check_error_message(context, mensaje):
+    """Verifica el mensaje de error."""
+    if hasattr(context, 'last_error_message'):
+        assert mensaje.lower() in context.last_error_message.lower(), \
+            f"Mensaje esperado: {mensaje}, obtenido: {context.last_error_message}"
