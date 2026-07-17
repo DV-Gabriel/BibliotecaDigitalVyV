@@ -1,0 +1,597 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Favoritos - Biblioteca Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- Reset y Variables --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --color-primary: #221613;
+            --color-secondary: #514335;
+            --color-tertiary: #557e9e;
+            --color-accent: #55a59e;
+            --color-background: #f9f9f9;
+            --color-white: #ffffff;
+            --color-favorito: #f5a623;
+            --color-success: #2d8f7e;
+            --color-danger: #dc3545;
+            --color-warning: #ffc107;
+            
+            --shadow-sm: 0 2px 8px rgba(34, 22, 19, 0.08);
+            --shadow-md: 0 8px 30px rgba(34, 22, 19, 0.12);
+            --shadow-lg: 0 16px 48px rgba(34, 22, 19, 0.16);
+            --radius: 16px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background: var(--color-background);
+            color: var(--color-primary);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* --- Animaciones --- */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        @keyframes heartBeat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            14% {
+                transform: scale(1.3);
+            }
+            28% {
+                transform: scale(1);
+            }
+            42% {
+                transform: scale(1.3);
+            }
+            70% {
+                transform: scale(1);
+            }
+        }
+
+        /* --- Mensajes --- */
+        .messages {
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .message {
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            border-left: 4px solid;
+        }
+
+        .message-success {
+            background: rgba(45, 143, 126, 0.1);
+            border-color: var(--color-success);
+            color: var(--color-success);
+        }
+
+        .message-info {
+            background: rgba(85, 126, 158, 0.1);
+            border-color: var(--color-tertiary);
+            color: var(--color-tertiary);
+        }
+
+        .message-error {
+            background: rgba(220, 53, 69, 0.1);
+            border-color: var(--color-danger);
+            color: var(--color-danger);
+        }
+
+        .message-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border-color: var(--color-warning);
+            color: #856404;
+        }
+
+        /* --- Breadcrumb --- */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: var(--color-secondary);
+            animation: fadeInUp 0.6s ease-out;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb a {
+            color: var(--color-tertiary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .breadcrumb a:hover {
+            color: var(--color-accent);
+            text-decoration: underline;
+        }
+
+        .breadcrumb .separator {
+            color: #d0c9c0;
+        }
+
+        .breadcrumb .current {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        /* --- Header --- */
+        .page-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            gap: 1rem;
+            animation: fadeInUp 0.6s ease-out 0.05s both;
+        }
+
+        .page-header .title-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-header .title-section .icon-wrapper {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            background: linear-gradient(135deg, #f5a623 0%, #f7c948 100%);
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.3);
+            animation: heartBeat 2s ease-in-out infinite;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .page-header .subtitle {
+            color: var(--color-secondary);
+            font-size: 0.95rem;
+        }
+
+        .page-header .subtitle .count {
+            font-weight: 600;
+            color: var(--color-favorito);
+        }
+
+        /* --- Grid de Favoritos --- */
+        .favoritos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+        }
+
+        /* --- Tarjeta de Favorito --- */
+        .favorito-card {
+            background: var(--color-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .favorito-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(245, 166, 35, 0.2);
+        }
+
+        .favorito-card .card-body {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .favorito-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .favorito-card .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-primary);
+            text-decoration: none;
+            transition: var(--transition);
+            flex: 1;
+            line-height: 1.3;
+        }
+
+        .favorito-card .card-title:hover {
+            color: var(--color-tertiary);
+        }
+
+        .favorito-card .card-title .tipo-icon {
+            font-size: 0.8rem;
+            margin-right: 0.3rem;
+        }
+
+        .favorito-card .card-title .tipo-icon.original {
+            color: #6c4f7a;
+        }
+
+        .favorito-card .card-title .tipo-icon.externo {
+            color: #c4784a;
+        }
+
+        .favorito-card .favorito-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--color-favorito);
+            background: rgba(245, 166, 35, 0.1);
+            border: 1px solid rgba(245, 166, 35, 0.2);
+            flex-shrink: 0;
+        }
+
+        .favorito-card .favorito-badge i {
+            font-size: 0.7rem;
+        }
+
+        .favorito-card .card-description {
+            color: var(--color-secondary);
+            font-size: 0.9rem;
+            margin: 0.5rem 0 0.8rem;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.5;
+            min-height: 2.8rem;
+        }
+
+        .favorito-card .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            font-size: 0.8rem;
+            color: var(--color-secondary);
+            border-top: 1px solid #f0ede9;
+            padding-top: 0.8rem;
+            margin-top: auto;
+        }
+
+        .favorito-card .card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .favorito-card .card-meta i {
+            font-size: 0.7rem;
+            color: var(--color-tertiary);
+        }
+
+        .favorito-card .card-meta .favorito-date {
+            margin-left: auto;
+            font-size: 0.7rem;
+            color: var(--color-secondary);
+        }
+
+        .favorito-card .card-actions {
+            padding: 0.8rem 1.5rem 1.2rem;
+            border-top: 1px solid #f0ede9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(249, 249, 249, 0.5);
+        }
+
+        .favorito-card .card-actions .btn-view {
+            background: var(--color-tertiary);
+            color: white;
+            border-color: var(--color-tertiary);
+            padding: 0.4rem 1.2rem;
+            font-size: 0.8rem;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: var(--transition);
+        }
+
+        .favorito-card .card-actions .btn-view:hover {
+            background: #3e6480;
+            border-color: #3e6480;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .favorito-card .card-actions .btn-remove {
+            background: transparent;
+            color: var(--color-danger);
+            border: 1px solid #e8e3de;
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .favorito-card .card-actions .btn-remove:hover {
+            background: var(--color-danger);
+            color: white;
+            border-color: var(--color-danger);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* --- Empty State --- */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--color-secondary);
+            grid-column: 1 / -1;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #d0c9c0;
+            margin-bottom: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .empty-state h3 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            max-width: 400px;
+            margin: 0 auto;
+            color: var(--color-secondary);
+        }
+
+        .empty-state a {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .empty-state a:hover {
+            color: var(--color-tertiary);
+            text-decoration: underline;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .page-header .title-section {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .favoritos-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .favorito-card .card-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .favorito-card .card-actions .btn-view,
+            .favorito-card .card-actions .btn-remove {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .page-header .title-section .icon-wrapper {
+                width: 48px;
+                height: 48px;
+                font-size: 1.4rem;
+            }
+
+            .favorito-card .card-body {
+                padding: 1.2rem;
+            }
+
+            .favorito-card .card-actions {
+                padding: 0.6rem 1.2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Mensajes -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message message-{{ message.tags }}">
+                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'info' %}info-circle{% elif message.tags == 'error' %}times-circle{% else %}exclamation-triangle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <a href="{% url 'recursos_digitales:catalogo' %}">
+                <i class="fas fa-home"></i> Catálogo
+            </a>
+            <span class="separator">/</span>
+            <span class="current">Mis Favoritos</span>
+        </nav>
+
+        <!-- Header -->
+        <header class="page-header">
+            <div class="title-section">
+                <div class="icon-wrapper">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div>
+                    <h1>Mis Favoritos</h1>
+                    <p class="subtitle">
+                        <span class="count">{{ favoritos|length }}</span>
+                        {% if favoritos|length == 1 %}recurso favorito{% else %}recursos favoritos{% endif %}
+                    </p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Grid de Favoritos -->
+        <div class="favoritos-grid">
+            {% for favorito in favoritos %}
+                <article class="favorito-card">
+                    <div class="card-body">
+                        <div class="card-header">
+                            <a href="{% url 'recursos_digitales:detalle' favorito.recurso.pk %}" class="card-title">
+                                <span class="tipo-icon {{ favorito.recurso.tipo }}">
+                                    <i class="fas {% if favorito.recurso.tipo == 'original' %}fa-pencil-alt{% else %}fa-book{% endif %}"></i>
+                                </span>
+                                {{ favorito.recurso.titulo|truncatechars:45 }}
+                            </a>
+                            <span class="favorito-badge">
+                                <i class="fas fa-heart"></i>
+                                Favorito
+                            </span>
+                        </div>
+
+                        <p class="card-description">
+                            {{ favorito.recurso.descripcion|truncatechars:90 }}
+                        </p>
+
+                        <div class="card-meta">
+                            <span>
+                                <i class="fas fa-tag"></i>
+                                {{ favorito.recurso.categoria.nombre|default:"Sin categoría" }}
+                            </span>
+                            <span>
+                                <i class="fas fa-user"></i>
+                                {% if favorito.recurso.autor_usuario %}
+                                    {{ favorito.recurso.autor_usuario.username }}
+                                {% elif favorito.recurso.autor_texto %}
+                                    {{ favorito.recurso.autor_texto }}
+                                {% else %}
+                                    Anónimo
+                                {% endif %}
+                            </span>
+                            <span class="favorito-date">
+                                <i class="far fa-calendar-alt"></i>
+                                {{ favorito.fecha_agregado|date:"d/m/Y" }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="card-actions">
+                        <a href="{% url 'recursos_digitales:detalle' favorito.recurso.pk %}" class="btn-view">
+                            <i class="fas fa-eye"></i> Ver recurso
+                        </a>
+                        <form method="post" action="{% url 'espacio_personal:favorito_toggle' favorito.recurso.pk %}" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{% url 'espacio_personal:favorito_lista' %}">
+                            <button type="submit" class="btn-remove" onclick="return confirm('¿Quitar "{{ favorito.recurso.titulo }}" de favoritos?')">
+                                <i class="fas fa-heart-broken"></i> Quitar favorito
+                            </button>
+                        </form>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-heart"></i>
+                    <h3>No tienes favoritos aún</h3>
+                    <p>
+                        Explora el catálogo y marca como favoritos los recursos que más te interesen.
+                    </p>
+                    <a href="{% url 'recursos_digitales:catalogo' %}">Explorar catálogo →</a>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</body>
+</html>

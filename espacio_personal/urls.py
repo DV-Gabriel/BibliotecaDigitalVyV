@@ -34,4 +34,7 @@ urlpatterns = [
     ),
     path('notas/<int:pk>/editar/', views.AnotacionUpdateView.as_view(), name='anotacion_editar'),
     path('notas/<int:pk>/eliminar/', views.AnotacionDeleteView.as_view(), name='anotacion_eliminar'),
+    path('favoritos/toggle/<int:recurso_pk>/', views.FavoritoToggleView.as_view(), name='favorito_toggle'),
+    path('colecciones/<int:coleccion_pk>/toggle/<int:recurso_pk>/', views.ColeccionRecursoToggleView.as_view(),
+         name='coleccion_toggle'),
 ]

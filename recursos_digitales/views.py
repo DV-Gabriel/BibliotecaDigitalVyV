@@ -9,6 +9,8 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from .forms import RecursoExternoForm, RecursoOriginalForm
 from .models import Categoria, Etiqueta, RecursoDigital
 
+from espacio_personal.models import Coleccion, Favorito
+
 
 def _buscar_similares(texto, queryset, umbral=0.6, limite=3):
     """
@@ -97,6 +99,19 @@ class RecursoDetailView(DetailView):
             .select_related('categoria', 'propietario', 'autor_usuario')
             .prefetch_related('etiquetas')
         )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        if user.is_authenticated:
+            context['es_favorito'] = Favorito.objects.filter(
+                usuario=user, recurso=self.object
+            ).exists()
+            context['colecciones_usuario'] = Coleccion.objects.filter(propietario=user)
+            context['colecciones_con_recurso'] = set(
+                self.object.colecciones.filter(propietario=user).values_list('id', flat=True)
+            )
+        return context
 
 
 class RecursoOriginalCreateView(LoginRequiredMixin, CreateView):

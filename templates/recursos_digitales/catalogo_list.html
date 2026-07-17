@@ -761,12 +761,20 @@
     <div class="container">
 
         <!-- Encabezado -->
-        <header class="catalog-header">
+          <header class="catalog-header">
             <h1>
                 <i class="fas fa-book-open"></i>
-                <span>Catálogo de Recursos</span>
+                Catálogo de Recursos
             </h1>
             <div class="actions">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'espacio_personal:coleccion_lista' %}" class="btn btn-outline">
+                        <i class="fas fa-folder"></i> Mis Colecciones
+                    </a>
+                    <a href="{% url 'espacio_personal:favorito_lista' %}" class="btn btn-outline">
+                        <i class="fas fa-star"></i> Mis Favoritos
+                    </a>
+                {% endif %}
                 <a href="{% url 'recursos_digitales:crear_original' %}" class="btn btn-primary">
                     <i class="fas fa-pen-fancy"></i> Crear Original
                 </a>

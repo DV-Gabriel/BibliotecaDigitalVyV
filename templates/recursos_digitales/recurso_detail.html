@@ -22,21 +22,21 @@
             --color-accent: #55a59e;
             --color-background: #f9f9f9;
             --color-white: #ffffff;
-            
+
             /* Colores para recursos originales */
             --color-original-primary: #6c4f7a;
             --color-original-light: #f0eaf5;
             --color-original-gradient: linear-gradient(135deg, #6c4f7a 0%, #8b6fa0 100%);
-            
+
             /* Colores para recursos externos */
             --color-externo-primary: #c4784a;
             --color-externo-light: #f5ede6;
             --color-externo-gradient: linear-gradient(135deg, #c4784a 0%, #e0946a 100%);
-            
+
             /* Colores para estados */
             --color-publicado: #2d8f7e;
             --color-borrador: #8a7a6a;
-            
+
             --shadow-sm: 0 2px 8px rgba(34, 22, 19, 0.08);
             --shadow-md: 0 8px 30px rgba(34, 22, 19, 0.12);
             --shadow-lg: 0 16px 48px rgba(34, 22, 19, 0.16);
@@ -409,6 +409,7 @@
             flex-wrap: wrap;
             gap: 0.75rem;
             background: rgba(249, 249, 249, 0.5);
+            align-items: center;
         }
 
         .btn {
@@ -431,6 +432,10 @@
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
         }
 
         .btn-primary {
@@ -488,8 +493,136 @@
             border-color: #1f6b5e;
         }
 
+        .btn-favorito {
+            background: #f5a623;
+            color: white;
+            border-color: #f5a623;
+            box-shadow: 0 4px 15px rgba(245, 166, 35, 0.3);
+        }
+
+        .btn-favorito:hover {
+            background: #e09515;
+            border-color: #e09515;
+            box-shadow: 0 8px 25px rgba(245, 166, 35, 0.4);
+        }
+
+        .btn-favorito.activo {
+            background: #dc3545;
+            border-color: #dc3545;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-favorito.activo:hover {
+            background: #c82333;
+            border-color: #c82333;
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+        }
+
         .btn .icon {
             font-size: 0.9rem;
+        }
+
+        /* --- Dropdown para colecciones --- */
+        .coleccion-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .coleccion-dropdown .dropdown-menu {
+            display: none;
+            position: absolute;
+            bottom: 110%;
+            left: 0;
+            min-width: 250px;
+            max-height: 300px;
+            overflow-y: auto;
+            background: var(--color-white);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid #f0ede9;
+            padding: 0.5rem 0;
+            z-index: 100;
+        }
+
+        .coleccion-dropdown .dropdown-menu.show {
+            display: block;
+            animation: fadeInUp 0.2s ease-out;
+        }
+
+        .coleccion-dropdown .dropdown-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .coleccion-dropdown .dropdown-menu::-webkit-scrollbar-track {
+            background: var(--color-background);
+        }
+
+        .coleccion-dropdown .dropdown-menu::-webkit-scrollbar-thumb {
+            background: var(--color-tertiary);
+            border-radius: 3px;
+        }
+
+        .coleccion-dropdown .dropdown-menu .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            color: var(--color-primary);
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .coleccion-dropdown .dropdown-menu .dropdown-item:hover {
+            background: var(--color-background);
+        }
+
+        .coleccion-dropdown .dropdown-menu .dropdown-item i {
+            width: 1.2rem;
+            color: var(--color-tertiary);
+        }
+
+        .coleccion-dropdown .dropdown-menu .dropdown-item .check {
+            margin-left: auto;
+            color: var(--color-accent);
+        }
+
+        .coleccion-dropdown .dropdown-menu .dropdown-divider {
+            height: 1px;
+            background: #f0ede9;
+            margin: 0.3rem 0;
+        }
+
+        .coleccion-dropdown .dropdown-menu .dropdown-header {
+            padding: 0.3rem 1rem;
+            font-size: 0.7rem;
+            color: var(--color-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .coleccion-dropdown .dropdown-menu .dropdown-empty {
+            padding: 0.8rem 1rem;
+            color: var(--color-secondary);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .coleccion-dropdown .dropdown-menu .dropdown-empty a {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .coleccion-dropdown .dropdown-menu .dropdown-empty a:hover {
+            color: var(--color-tertiary);
+            text-decoration: underline;
         }
 
         /* --- Mensajes --- */
@@ -553,10 +686,23 @@
 
             .detail-actions .btn {
                 justify-content: center;
+                width: 100%;
             }
 
             .detail-body .meta-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .coleccion-dropdown {
+                width: 100%;
+            }
+
+            .coleccion-dropdown .dropdown-menu {
+                position: relative;
+                bottom: auto;
+                left: auto;
+                width: 100%;
+                max-height: 200px;
             }
         }
 
@@ -581,39 +727,39 @@
     </style>
 </head>
 <body>
-    <div class="container">
+<div class="container">
 
-        <!-- Breadcrumb -->
-        <nav class="breadcrumb">
-            <a href="{% url 'recursos_digitales:catalogo' %}">
-                <i class="fas fa-home"></i> Catálogo
-            </a>
-            <span class="separator">/</span>
-            <span class="current">{{ recurso.titulo|truncatechars:40 }}</span>
-        </nav>
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+        <a href="{% url 'recursos_digitales:catalogo' %}">
+            <i class="fas fa-home"></i> Catálogo
+        </a>
+        <span class="separator">/</span>
+        <span class="current">{{ recurso.titulo|truncatechars:40 }}</span>
+    </nav>
 
-        <!-- Mensajes -->
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="message message-{{ message.tags }}">
-                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'warning' %}exclamation-triangle{% elif message.tags == 'error' %}times-circle{% else %}info-circle{% endif %}"></i>
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+    <!-- Mensajes -->
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message message-{{ message.tags }}">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'warning' %}exclamation-triangle{% elif message.tags == 'error' %}times-circle{% else %}info-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
-        <!-- Detalle del Recurso -->
-        <article class="detail-card tipo-{{ recurso.tipo }}">
-            <!-- Header -->
-            <header class="detail-header">
-                <div class="title-section">
-                    <h1>
-                        <i class="fas {% if recurso.tipo == 'original' %}fa-pencil-alt{% else %}fa-book{% endif %}"></i>
-                        {{ recurso.titulo }}
-                    </h1>
-                    <div class="subtitle">
+    <!-- Detalle del Recurso -->
+    <article class="detail-card tipo-{{ recurso.tipo }}">
+        <!-- Header -->
+        <header class="detail-header">
+            <div class="title-section">
+                <h1>
+                    <i class="fas {% if recurso.tipo == 'original' %}fa-pencil-alt{% else %}fa-book{% endif %}"></i>
+                    {{ recurso.titulo }}
+                </h1>
+                <div class="subtitle">
                         <span>
                             <i class="fas fa-user"></i>
                             {% if recurso.autor_usuario %}
@@ -624,76 +770,76 @@
                                 Anónimo
                             {% endif %}
                         </span>
-                        <span>
+                    <span>
                             <i class="far fa-calendar-alt"></i>
                             {{ recurso.fecha_creacion|date:"d/m/Y H:i" }}
                         </span>
-                        <span>
+                    <span>
                             <i class="fas fa-sync-alt"></i>
                             {{ recurso.fecha_actualizacion|date:"d/m/Y H:i" }}
                         </span>
-                    </div>
                 </div>
-                <div class="badges">
+            </div>
+            <div class="badges">
                     <span class="badge badge-tipo">
                         <i class="fas {% if recurso.tipo == 'original' %}fa-pen-fancy{% else %}fa-link{% endif %}"></i>
                         {{ recurso.get_tipo_display }}
                     </span>
-                    <span class="badge {% if recurso.estado == 'publicado' %}badge-estado-publicado{% else %}badge-estado-borrador{% endif %}">
+                <span class="badge {% if recurso.estado == 'publicado' %}badge-estado-publicado{% else %}badge-estado-borrador{% endif %}">
                         <i class="fas {% if recurso.estado == 'publicado' %}fa-check-circle{% else %}fa-pencil{% endif %}"></i>
                         {{ recurso.get_estado_display }}
                     </span>
-                    <span class="badge badge-visibilidad">
+                <span class="badge badge-visibilidad">
                         <i class="fas fa-eye"></i>
                         {{ recurso.get_visibilidad_display }}
                     </span>
-                </div>
-            </header>
+            </div>
+        </header>
 
-            <!-- Body -->
-            <div class="detail-body">
-                <!-- Descripción -->
-                {% if recurso.descripcion %}
-                    <div class="section">
-                        <div class="section-title">
-                            <i class="fas fa-align-left"></i> Descripción
-                        </div>
-                        <div class="description">{{ recurso.descripcion }}</div>
-                    </div>
-                {% endif %}
-
-                <!-- Contenido o Archivo -->
-                {% if recurso.contenido %}
-                    <div class="section">
-                        <div class="section-title">
-                            <i class="fas fa-file-alt"></i> Contenido
-                        </div>
-                        <div class="content">{{ recurso.contenido }}</div>
-                    </div>
-                {% elif recurso.archivo %}
-                    <div class="section">
-                        <div class="section-title">
-                            <i class="fas fa-paperclip"></i> Archivo adjunto
-                        </div>
-                        <a href="{{ recurso.archivo.url }}" class="file-link" target="_blank">
-                            <i class="fas fa-download"></i>
-                            Descargar archivo
-                            <small style="font-weight: 400; opacity: 0.7;">
-                                ({{ recurso.archivo.name|slice:"-10" }})
-                            </small>
-                        </a>
-                    </div>
-                {% endif %}
-
-                <!-- Metadatos -->
+        <!-- Body -->
+        <div class="detail-body">
+            <!-- Descripción -->
+            {% if recurso.descripcion %}
                 <div class="section">
                     <div class="section-title">
-                        <i class="fas fa-info-circle"></i> Información
+                        <i class="fas fa-align-left"></i> Descripción
                     </div>
-                    <div class="meta-grid">
-                        <div class="meta-item">
-                            <span class="label"><i class="fas fa-tag"></i> Categoría</span>
-                            <span class="value">
+                    <div class="description">{{ recurso.descripcion }}</div>
+                </div>
+            {% endif %}
+
+            <!-- Contenido o Archivo -->
+            {% if recurso.contenido %}
+                <div class="section">
+                    <div class="section-title">
+                        <i class="fas fa-file-alt"></i> Contenido
+                    </div>
+                    <div class="content">{{ recurso.contenido }}</div>
+                </div>
+            {% elif recurso.archivo %}
+                <div class="section">
+                    <div class="section-title">
+                        <i class="fas fa-paperclip"></i> Archivo adjunto
+                    </div>
+                    <a href="{{ recurso.archivo.url }}" class="file-link" target="_blank">
+                        <i class="fas fa-download"></i>
+                        Descargar archivo
+                        <small style="font-weight: 400; opacity: 0.7;">
+                            ({{ recurso.archivo.name|slice:"-10" }})
+                        </small>
+                    </a>
+                </div>
+            {% endif %}
+
+            <!-- Metadatos -->
+            <div class="section">
+                <div class="section-title">
+                    <i class="fas fa-info-circle"></i> Información
+                </div>
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <span class="label"><i class="fas fa-tag"></i> Categoría</span>
+                        <span class="value">
                                 {% if recurso.categoria %}
                                     <a href="{% url 'recursos_digitales:catalogo' %}?categoria={{ recurso.categoria.id }}">
                                         {{ recurso.categoria.nombre }}
@@ -702,16 +848,16 @@
                                     Sin categoría
                                 {% endif %}
                             </span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="label"><i class="fas fa-user"></i> Propietario</span>
-                            <span class="value">
+                    </div>
+                    <div class="meta-item">
+                        <span class="label"><i class="fas fa-user"></i> Propietario</span>
+                        <span class="value">
                                 {{ recurso.propietario.get_full_name|default:recurso.propietario.username }}
                             </span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="label"><i class="fas fa-user-edit"></i> Autor</span>
-                            <span class="value">
+                    </div>
+                    <div class="meta-item">
+                        <span class="label"><i class="fas fa-user-edit"></i> Autor</span>
+                        <span class="value">
                                 {% if recurso.autor_usuario %}
                                     {{ recurso.autor_usuario.get_full_name|default:recurso.autor_usuario.username }}
                                     <small style="color: var(--color-secondary);">(usuario)</small>
@@ -722,73 +868,157 @@
                                     No especificado
                                 {% endif %}
                             </span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="label"><i class="fas fa-hashtag"></i> Estado</span>
-                            <span class="value">
+                    </div>
+                    <div class="meta-item">
+                        <span class="label"><i class="fas fa-hashtag"></i> Estado</span>
+                        <span class="value">
                                 {{ recurso.get_estado_display }}
                             </span>
-                        </div>
                     </div>
                 </div>
-
-                <!-- Etiquetas -->
-                {% if recurso.etiquetas.all %}
-                    <div class="section">
-                        <div class="section-title">
-                            <i class="fas fa-tags"></i> Etiquetas
-                        </div>
-                        <div class="tags">
-                            {% for etiqueta in recurso.etiquetas.all %}
-                                <a href="{% url 'recursos_digitales:catalogo' %}?etiqueta={{ etiqueta.id }}" class="tag">
-                                    #{{ etiqueta.nombre }}
-                                </a>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
             </div>
 
-            <!-- Acciones -->
-            <footer class="detail-actions">
-                <!-- Volver al catálogo -->
-                <a href="{% url 'recursos_digitales:catalogo' %}" class="btn btn-outline">
-                    <i class="fas fa-arrow-left"></i> Volver al catálogo
+            <!-- Etiquetas -->
+            {% if recurso.etiquetas.all %}
+                <div class="section">
+                    <div class="section-title">
+                        <i class="fas fa-tags"></i> Etiquetas
+                    </div>
+                    <div class="tags">
+                        {% for etiqueta in recurso.etiquetas.all %}
+                            <a href="{% url 'recursos_digitales:catalogo' %}?etiqueta={{ etiqueta.id }}" class="tag">
+                                #{{ etiqueta.nombre }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Acciones -->
+        <footer class="detail-actions">
+            <!-- Volver al catálogo -->
+            <a href="{% url 'recursos_digitales:catalogo' %}" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i> Volver al catálogo
+            </a>
+
+            <!-- Editar (solo propietario) -->
+            {% if user == recurso.propietario %}
+                <a href="{% url 'recursos_digitales:editar' recurso.pk %}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Editar recurso
                 </a>
+            {% endif %}
 
-                <!-- Editar (solo propietario) -->
-                {% if user == recurso.propietario %}
-                    <a href="{% url 'recursos_digitales:editar' recurso.pk %}" class="btn btn-primary">
-                        <i class="fas fa-edit"></i> Editar recurso
-                    </a>
-                {% endif %}
+            <!-- Espacio flexible para separar acciones -->
+            <span style="flex: 1;"></span>
 
-                <!-- Espacio flexible para separar acciones -->
-                <span style="flex: 1;"></span>
+            <!-- Compartir (si está publicado y es propietario) -->
+            {% if user == recurso.propietario and recurso.estado == 'publicado' %}
+                <button class="btn btn-success" onclick="alert('Funcionalidad de compartir en desarrollo')">
+                    <i class="fas fa-share-alt"></i> Compartir
+                </button>
+            {% endif %}
 
-                <!-- Compartir (si está publicado y es propietario) -->
-                {% if user == recurso.propietario and recurso.estado == 'publicado' %}
-                    <button class="btn btn-success" onclick="alert('Funcionalidad de compartir en desarrollo')">
-                        <i class="fas fa-share-alt"></i> Compartir
+            <!-- Agregar a favoritos (si no es propietario y está autenticado) -->
+            {% if user.is_authenticated and user != recurso.propietario %}
+                <form method="post" action="{% url 'espacio_personal:favorito_toggle' recurso.pk %}"
+                      style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{% url 'recursos_digitales:detalle' recurso.pk %}">
+                    <button type="submit" class="btn btn-favorito {% if es_favorito %}activo{% endif %}">
+                        <i class="fas {% if es_favorito %}fa-heart{% else %}fa-star{% endif %}"></i>
+                        {% if es_favorito %}
+                            Quitar de favoritos
+                        {% else %}
+                            Agregar a favoritos
+                        {% endif %}
                     </button>
-                {% endif %}
+                </form>
+            {% endif %}
 
-                <!-- Agregar a favoritos (si no es propietario) -->
-                {% if user.is_authenticated and user != recurso.propietario %}
-                    <button class="btn btn-warning" onclick="alert('Funcionalidad de favoritos en desarrollo')">
-                        <i class="fas fa-star"></i> Agregar a favoritos
-                    </button>
-                {% endif %}
-
-                <!-- Agregar a colección (si está autenticado) -->
-                {% if user.is_authenticated %}
-                    <button class="btn btn-outline" onclick="alert('Funcionalidad de colecciones en desarrollo')">
+            <!-- Agregar a colección (si está autenticado) -->
+            {% if user.is_authenticated %}
+                <div class="coleccion-dropdown">
+                    <button class="btn btn-outline" onclick="toggleDropdown()" id="coleccionToggle" type="button">
                         <i class="fas fa-folder-plus"></i> Agregar a colección
+                        <i class="fas fa-chevron-down" style="font-size: 0.7rem; margin-left: 0.3rem;"></i>
                     </button>
-                {% endif %}
-            </footer>
-        </article>
+                    <div class="dropdown-menu" id="coleccionMenu">
+                        {% if colecciones_usuario %}
+                            <div class="dropdown-header">
+                                <i class="fas fa-folder"></i> Tus colecciones
+                            </div>
+                            {% for coleccion in colecciones_usuario %}
+                                <form method="post"
+                                      action="{% url 'espacio_personal:coleccion_toggle' coleccion.pk recurso.pk %}"
+                                      style="display: block;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-folder"></i>
+                                        {{ coleccion.nombre }}
+                                        <span style="margin-left: auto; font-size: 0.7rem; color: var(--color-secondary);">
+                                                ({{ coleccion.recursos.count }})
+                                            </span>
+                                        {% if coleccion.pk in colecciones_con_recurso %}
+                                            <span class="check"><i class="fas fa-check-circle"></i></span>
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            {% endfor %}
+                            <div class="dropdown-divider"></div>
+                            <a href="{% url 'espacio_personal:coleccion_crear' %}" class="dropdown-item"
+                               style="color: var(--color-accent);">
+                                <i class="fas fa-plus-circle"></i>
+                                Crear nueva colección
+                            </a>
+                        {% else %}
+                            <div class="dropdown-empty">
+                                <i class="fas fa-folder-open"
+                                   style="font-size: 2rem; color: #d0c9c0; display: block; margin-bottom: 0.5rem;"></i>
+                                <p style="margin-bottom: 0.3rem;">No tienes colecciones aún.</p>
+                                <a href="{% url 'espacio_personal:coleccion_crear' %}">
+                                    <i class="fas fa-plus-circle"></i> Crear mi primera colección →
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
 
-    </div>
+            <!-- Anotaciones (si está autenticado) -->
+            {% if user.is_authenticated %}
+                <a href="{% url 'espacio_personal:anotaciones' recurso.pk %}" class="btn btn-outline">
+                    <i class="fas fa-sticky-note"></i> Mis Anotaciones
+                    <span class="badge"
+                          style="background: var(--color-tertiary); color: white; padding: 0.1rem 0.5rem; border-radius: 50px; font-size: 0.7rem; margin-left: 0.3rem;">
+            {{ recurso.anotaciones.count }}
+        </span>
+                </a>
+            {% endif %}
+        </footer>
+    </article>
+
+</div>
+
+<!-- Script para el dropdown -->
+<script>
+    function toggleDropdown() {
+        const menu = document.getElementById('coleccionMenu');
+        if (menu) {
+            menu.classList.toggle('show');
+        }
+    }
+
+    // Cerrar el dropdown al hacer clic fuera
+    document.addEventListener('click', function (event) {
+        const dropdown = document.querySelector('.coleccion-dropdown');
+        if (dropdown && !dropdown.contains(event.target)) {
+            const menu = document.getElementById('coleccionMenu');
+            if (menu) {
+                menu.classList.remove('show');
+            }
+        }
+    });
+</script>
 </body>
 </html>
