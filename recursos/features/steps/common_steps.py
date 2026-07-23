@@ -35,6 +35,10 @@ def step_authenticate_user(context):
             first_name='Usuario',
         )
         context.usuario_actual = user
+    if not hasattr(context, 'usuarios'):
+        context.usuarios = {}
+    # El login se hace contra el test client de Django, no contra el
+    # diccionario de usuarios.
     context.client.force_login(context.usuario_actual)
 
 
@@ -49,7 +53,12 @@ def step_authenticate_specific_user(context, nombre):
             password='test123',
             first_name=nombre,
         )
+    if not hasattr(context, 'usuarios'):
+        context.usuarios = {}
+    context.usuarios[nombre] = user
     context.usuario_actual = user
+    # Antes: context.usuarios.force_login(user) -> 'usuarios' es un dict,
+    # no tiene force_login. El login va contra el test client.
     context.client.force_login(user)
 
 

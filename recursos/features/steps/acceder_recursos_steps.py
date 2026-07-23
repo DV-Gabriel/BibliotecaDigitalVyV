@@ -9,9 +9,16 @@ from interacciones.models import CompartidoCon
 User = get_user_model()
 
 
+# ==========================================
+# GIVENS (ANTECEDENTES Y DADOS)
+# ==========================================
+
 @given('el recurso "{titulo}" es público y pertenece a {usuario}')
 def step_create_public_resource(context, titulo, usuario):
     """Crea un recurso público."""
+    if not hasattr(context, 'usuarios'):
+        context.usuarios = {}
+    
     user = context.usuarios.get(usuario)
     if not user:
         user = User.objects.create_user(
@@ -35,6 +42,59 @@ def step_create_public_resource(context, titulo, usuario):
         context.recursos = {}
     context.recursos[titulo] = recurso
 
+
+@given('que "{titulo}" fue compartido por {propietario} con {usuario}')
+def step_given_resource_shared(context, titulo, propietario, usuario):
+    """Crea la relación de recurso compartido en la base de datos."""
+    if not hasattr(context, 'usuarios'):
+        context.usuarios = {}
+    if not hasattr(context, 'recursos'):
+        context.recursos = {}
+
+    # Obtener o crear al usuario destinatario
+    user_dest = context.usuarios.get(usuario)
+    if not user_dest:
+        user_dest, _ = User.objects.get_or_create(
+            username=usuario.lower(),
+            defaults={'first_name': usuario}
+        )
+        context.usuarios[usuario] = user_dest
+
+    # Obtener o crear al usuario propietario
+    user_prop = context.usuarios.get(propietario)
+    if not user_prop:
+        user_prop, _ = User.objects.get_or_create(
+            username=propietario.lower(),
+            defaults={'first_name': propietario}
+        )
+        context.usuarios[propietario] = user_prop
+
+    # Obtener o crear el recurso
+    recurso = context.recursos.get(titulo)
+    if not recurso:
+        recurso, _ = RecursoDigital.objects.get_or_create(
+            titulo=titulo,
+            propietario=user_prop,
+            defaults={
+                'descripcion': f'Descripción de {titulo}',
+                'tipo': RecursoDigital.Tipo.ORIGINAL,
+                'visibilidad': RecursoDigital.Visibilidad.PRIVADO,
+                'estado': RecursoDigital.Estado.PUBLICADO,
+            }
+        )
+        context.recursos[titulo] = recurso
+
+    # Crear el registro de recurso compartido activo
+    CompartidoCon.objects.get_or_create(
+        recurso=recurso,
+        usuario=user_dest,
+        defaults={'activo': True}
+    )
+
+
+# ==========================================
+# WHENS (ACCIONES Y CUANDOS)
+# ==========================================
 
 @when('{usuario} consulta su lista de "recursos compartidos conmigo"')
 def step_user_checks_shared_resources(context, usuario):
@@ -92,6 +152,10 @@ def step_user_try_edit_resource(context, usuario, titulo):
         context.last_error_message = str(e)
 
 
+# ==========================================
+# THENS (VERIFICACIONES Y ENTONCES)
+# ==========================================
+
 @then('debe poder visualizar su contenido completo')
 def step_verify_can_view_content(context):
     """Verifica que puede ver el contenido."""
@@ -111,9 +175,15 @@ def step_verify_resource_in_list(context, titulo):
 @then('no debe ver el recurso "{titulo}" en la lista')
 def step_verify_resource_not_in_list(context, titulo):
     """Verifica que un recurso NO está en la lista."""
-    recurso = context.recursos.get(titulo)
-    assert recurso not in context.recursos_visibles, \
-        f"El recurso {titulo} no debería estar en la lista"
+    recurso = getattr(context, 'recursos', {}).get(titulo)
+    
+    # Si el recurso ni siquiera existe en context.recursos, 
+    # por definición tampoco está en la lista visible (Prueba Exitosa).
+    if recurso is None:
+        titulos_visibles = [r.titulo for r in getattr(context, 'recursos_visibles', [])]
+        assert titulo not in titulos_visibles, f"El recurso '{titulo}' no debería estar en la lista visible"
+    else:
+        assert recurso not in context.recursos_visibles, f"El recurso '{titulo}' no debería estar en la lista"
 
 
 @then('el sistema debe rechazar el acceso')

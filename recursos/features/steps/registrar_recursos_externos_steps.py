@@ -1,12 +1,31 @@
 """
 Steps para la feature 'Registrar_recursos_externos'.
 """
+import unicodedata
+
 from behave import given, when, then
 from django.contrib.auth import get_user_model
 from recursos_digitales.models import RecursoDigital, Categoria, Etiqueta
 from interacciones.models import CompartidoCon
 
 User = get_user_model()
+
+
+def _normalizar_visibilidad(valor):
+    """Convierte el valor del Gherkin ('público', 'privado', etc.) al
+    value real de RecursoDigital.Visibilidad ('publico', 'privado'),
+    quitando tildes y pasando a minúsculas para que coincida con los
+    choices del modelo.
+    """
+    if not valor:
+        return RecursoDigital.Visibilidad.PRIVADO
+    sin_tildes = ''.join(
+        c for c in unicodedata.normalize('NFD', valor)
+        if unicodedata.category(c) != 'Mn'
+    ).lower().strip()
+    if sin_tildes == RecursoDigital.Visibilidad.PUBLICO:
+        return RecursoDigital.Visibilidad.PUBLICO
+    return RecursoDigital.Visibilidad.PRIVADO
 
 
 @when('{usuario} registra un recurso con:')
@@ -35,8 +54,8 @@ def step_register_resource(context, usuario):
     if 'categoría' in campos:
         categoria, _ = Categoria.objects.get_or_create(nombre=campos['categoría'])
 
-    # Determinar visibilidad
-    visibilidad = campos.get('visibilidad', RecursoDigital.Visibilidad.PRIVADO)
+    # Determinar visibilidad (normalizando tildes: "público" -> "publico")
+    visibilidad = _normalizar_visibilidad(campos.get('visibilidad'))
 
     # Si el autor se especificó como texto, crear como EXTERNO
     if campos.get('autor'):
@@ -101,7 +120,6 @@ def step_verify_resource_owner_external(context, usuario):
     recurso = context.ultimo_recurso_registrado
     assert recurso.propietario == user, \
         f"{usuario} no es propietario del recurso"
-
 
 @given('que {usuario} registra el recurso "{titulo}" con autor externo "{autor}"')
 def step_register_external_resource(context, usuario, titulo, autor):
@@ -188,8 +206,10 @@ def step_verify_registration_prevented(context):
 @then('el recurso "{titulo}" debe quedar registrado con autor "{autor}"')
 def step_verify_resource_author_is_owner(context, titulo, autor):
     """Verifica que el autor es el propietario."""
-    recurso = context.ultimo_recurso_sin_autor_externo or context.recursos.get(titulo)
-    
+    # Antes: context.ultimo_recurso_sin_autor_externo, que nunca se
+    # asignaba en ningún step -> AttributeError.
+    recurso = context.recursos.get(titulo) or context.ultimo_recurso_registrado
+
     # Verificar que el autor es el propietario
     if recurso.autor_usuario:
         assert recurso.autor_usuario.first_name == autor, \
@@ -248,3 +268,4 @@ def step_verify_author_unchanged(context, autor):
     recurso = list(context.recursos.values())[-1]
     assert recurso.autor_texto == autor, \
         f"El autor cambió a {recurso.autor_texto}"
+    

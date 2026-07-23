@@ -7,6 +7,7 @@ hooks para setup/teardown de la base de datos y fixtures.
 import os
 import django
 from django.conf import settings
+from django.test import Client
 from django.test.utils import get_runner
 
 # Asegurar que DJANGO_SETTINGS_MODULE esté definido antes de que se importen
@@ -35,6 +36,10 @@ def after_all(context):
 
 def before_scenario(context, scenario):
     """Se ejecuta antes de cada escenario."""
+    # Test client de Django: lo usan los steps de autenticación
+    # (context.client.force_login(user)).
+    context.client = Client()
+
     # Inicializar registries
     context.usuarios = {}
     context.recursos = {}

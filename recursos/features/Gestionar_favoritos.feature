@@ -1,27 +1,27 @@
-# language: en
-Feature: Gestionar favoritos y marcadores de acceso rápido
+# language: es
+Característica: Gestionar favoritos y marcadores de acceso rápido
   Como usuario
   Quiero que mis favoritos respeten en todo momento el acceso vigente al recurso original (RN5, RN10)
   Para no perder ni conservar indebidamente acceso a través de un marcador
 
-  Background:
-    Given that I am an authenticated user in the system
+  Antecedentes:
+    Dado que soy un usuario autenticado en el sistema
 
-  Scenario Outline: Marcar como favorito según el tipo de acceso al recurso (RN5)
-    Given that a resource of type "<tipo_recurso>" exists
-    When I try to mark it as favorite
-    Then the result of the action is "<resultado>"
+  Esquema del escenario: Marcar como favorito según el tipo de acceso al recurso (RN5)
+    Dado que existe un recurso de tipo "<tipo_recurso>"
+    Cuando intento marcarlo como favorito
+    Entonces el resultado de la acción es "<resultado>"
 
-    Examples:
+    Ejemplos:
       | tipo_recurso                   | resultado             |
       | público                        | marcado exitosamente  |
       | compartido conmigo              | marcado exitosamente  |
       | propio                          | marcado exitosamente  |
       | privado no compartido conmigo   | acción rechazada      |
 
-  Scenario: Un recurso favorito pierde disponibilidad al revocarse el acceso compartido (RN10)
-    Given that the resource "R2" is in my favorites list
-    And the owner revokes the shared access to "R2"
-    When I access my favorites list
-    Then "R2" is no longer available to open
-    And the system indicates that access was revoked
+  Escenario: Un recurso favorito pierde disponibilidad al revocarse el acceso compartido (RN10)
+    Dado que el recurso "R2" está en mi lista de favoritos
+    Y el propietario revoca el acceso compartido sobre "R2"
+    Cuando accedo a mi lista de favoritos
+    Entonces "R2" ya no está disponible para abrir
+    Y el sistema indica que el acceso fue revocado

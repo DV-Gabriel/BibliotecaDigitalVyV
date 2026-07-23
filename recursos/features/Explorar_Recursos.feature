@@ -1,46 +1,46 @@
-# language: en
-Feature: Explorar y buscar recursos digitales en el catálogo
+# language: es
+Característica: Explorar y buscar recursos digitales en el catálogo
   Como usuario
   Quiero que el catálogo me muestre únicamente los recursos a los que tengo acceso (RN5)
   Para encontrar material de mi interés sin exponer contenido privado de otros usuarios
 
-  Background:
-    Given that the following resources exist in the system:
+  Antecedentes:
+    Dado que existen los siguientes recursos en el sistema:
       | titulo                       | visibilidad | propietario |
       | Introducción a la Física     | publico     | Carlos      |
       | Cálculo Diferencial          | publico     | Ana         |
       | Apuntes de Química Orgánica  | privado     | Marta       |
       | Ejercicios de Álgebra Lineal | compartido  | Luis        |
 
-  Scenario: Un recurso privado no aparece en la búsqueda de otro usuario
-    When Ana searches for "Química Orgánica" in the catalog
-    Then she should not see the resource "Apuntes de Química Orgánica" in the results
+  Escenario: Un recurso privado no aparece en la búsqueda de otro usuario
+    Cuando Ana busca "Química Orgánica" en el catálogo
+    Entonces no debe ver el recurso "Apuntes de Química Orgánica" en los resultados
 
-  Scenario: Un recurso público sí aparece para cualquier usuario
-    When Ana searches for "Física" in the catalog
-    Then she should see the resource "Introducción a la Física" in the results
+  Escenario: Un recurso público sí aparece para cualquier usuario
+    Cuando Ana busca "Física" en el catálogo
+    Entonces debe ver el recurso "Introducción a la Física" en los resultados
 
-  Scenario: Un recurso compartido aparece solo para el usuario con quien fue compartido
-    Given that the resource "Ejercicios de Álgebra Lineal" was shared by Luis with Ana
-    When Ana searches for "Álgebra Lineal" in the catalog
-    Then she should see the resource "Ejercicios de Álgebra Lineal" in the results
+  Escenario: Un recurso compartido aparece solo para el usuario con quien fue compartido
+    Dado que el recurso "Ejercicios de Álgebra Lineal" fue compartido por Luis con Ana
+    Cuando Ana busca "Álgebra Lineal" en el catálogo
+    Entonces debe ver el recurso "Ejercicios de Álgebra Lineal" en los resultados
 
-  Scenario: Un recurso compartido no aparece para un usuario ajeno al que se compartió
-    Given that the resource "Ejercicios de Álgebra Lineal" was shared by Luis with Ana
-    When Marta searches for "Álgebra Lineal" in the catalog
-    Then she should not see the resource "Ejercicios de Álgebra Lineal" in the results
+  Escenario: Un recurso compartido no aparece para un usuario ajeno al que se compartió
+    Dado que el recurso "Ejercicios de Álgebra Lineal" fue compartido por Luis con Ana
+    Cuando Marta busca "Álgebra Lineal" en el catálogo
+    Entonces no debe ver el recurso "Ejercicios de Álgebra Lineal" en los resultados
 
-  Scenario Outline: Mostrar el rol del autor como indicador de confianza
-    Given that the resource "<recurso>" has as author a user with role "<rol>"
-    When Ana views the resource "<recurso>"
-    Then she should see that the author has the role "<rol>"
+  Esquema del escenario: Mostrar el rol del autor como indicador de confianza
+    Dado que el recurso "<recurso>" tiene como autor a un usuario con rol "<rol>"
+    Cuando Ana consulta el recurso "<recurso>"
+    Entonces debe ver que el autor tiene el rol "<rol>"
 
-    Examples:
+    Ejemplos:
       | recurso                    | rol         |
       | Introducción a la Física   | docente     |
       | Apuntes de clase de Luis   | estudiante  |
 
-  Scenario: No mostrar rol cuando el autor es externo
-    Given that the resource "Principios de Economía" has external author "Adam Smith"
-    When Ana views the resource "Principios de Economía"
-    Then the system should not display any role associated with the author
+  Escenario: No mostrar rol cuando el autor es externo
+    Dado que el recurso "Principios de Economía" tiene como autor externo a "Adam Smith"
+    Cuando Ana consulta el recurso "Principios de Economía"
+    Entonces el sistema no debe mostrar ningún rol asociado al autor
