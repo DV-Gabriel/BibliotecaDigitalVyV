@@ -63,8 +63,6 @@ def step_authenticate_specific_user(context, nombre):
         context.usuarios = {}
     context.usuarios[nombre] = user
     context.usuario_actual = user
-    # Antes: context.usuarios.force_login(user) -> 'usuarios' es un dict,
-    # no tiene force_login. El login va contra el test client.
     context.client.force_login(user)
 
 @given('existe el usuario "{nombre}"')

@@ -104,9 +104,7 @@ def step_given_resource_shared(context, titulo, propietario, usuario):
     )
 
 
-# ==========================================
-# WHENS (ACCIONES Y CUANDOS)
-# ==========================================
+# When (Acciones)
 
 @when('{usuario} consulta su lista de "recursos compartidos conmigo"')
 def step_user_checks_shared_resources(context, usuario):
@@ -164,9 +162,7 @@ def step_user_try_edit_resource(context, usuario, titulo):
         context.last_error_message = str(e)
 
 
-# ==========================================
-# THENS (VERIFICACIONES Y ENTONCES)
-# ==========================================
+# Then (Verificaciones)
 
 @then('debe poder visualizar su contenido completo')
 def step_verify_can_view_content(context):
