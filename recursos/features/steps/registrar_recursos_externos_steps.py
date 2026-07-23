@@ -13,7 +13,7 @@ User = get_user_model()
 
 def _normalizar_visibilidad(valor):
     """Convierte el valor del Gherkin ('público', 'privado', etc.) al
-    value real de RecursoDigital.Visibilidad ('publico', 'privado'),
+    value real de RecursoDigital. Visibilidad ('público', 'privado'),
     quitando tildes y pasando a minúsculas para que coincida con los
     choices del modelo.
     """
@@ -92,7 +92,6 @@ def step_register_resource(context, usuario):
         context.recursos = {}
     context.recursos[campos.get('título')] = recurso
     context.ultimo_recurso_registrado = recurso
-
 
 @then('el recurso "{titulo}" debe quedar registrado en el sistema')
 def step_verify_external_resource_registered(context, titulo):
