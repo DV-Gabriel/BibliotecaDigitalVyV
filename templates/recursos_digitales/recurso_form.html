@@ -685,7 +685,7 @@
             </div>
             <div>
                 <h1>
-                    Editar Recurso
+                    Editar recurso
                     <span class="tipo-label tipo-{{ object.tipo }}">
                         ({{ object.get_tipo_display }})
                     </span>
@@ -783,7 +783,7 @@
                     <div class="form-row">
                         <div class="form-group {% if form.autor_texto.errors %}has-error{% endif %}">
                             <label for="{{ form.autor_texto.id_for_label }}">
-                                Autor Externo
+                                Autor externo
                                 <span class="help-icon" title="Nombre del autor original si no está registrado en el sistema">ⓘ</span>
                             </label>
                             {{ form.autor_texto }}
@@ -898,10 +898,10 @@
                 </a>
                 <span style="flex: 1;"></span>
                 <button type="submit" name="save_draft" value="1" class="btn btn-outline">
-                    <i class="fas fa-save"></i> Guardar Borrador
+                    <i class="fas fa-save"></i> Guardar borrador
                 </button>
                 <button type="submit" class="btn btn-primary tipo-{{ object.tipo }}">
-                    <i class="fas fa-save"></i> Actualizar Recurso
+                    <i class="fas fa-save"></i> Actualizar recurso
                 </button>
             </div>
 

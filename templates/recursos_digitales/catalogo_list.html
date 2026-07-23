@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo de Recursos - Biblioteca Digital</title>
+    <title>Catálogo de recursos - Biblioteca Digital</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* --- Reset y Variables --- */
@@ -322,7 +322,7 @@
         .filter-group label {
             font-size: 0.7rem;
             font-weight: 700;
-            text-transform: uppercase;
+            text-transform: none;
             letter-spacing: 0.8px;
             color: var(--color-secondary);
             margin-bottom: 0.4rem;
@@ -513,7 +513,7 @@
             border-radius: 50px;
             font-size: 0.65rem;
             font-weight: 700;
-            text-transform: uppercase;
+            text-transform: none;
             letter-spacing: 0.5px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             margin: 0.0rem 0 0.6rem 0;
@@ -554,7 +554,7 @@
         .resource-card .badge-estado {
             font-size: 0.6rem;
             font-weight: 700;
-            text-transform: uppercase;
+            text-transform: none;
             letter-spacing: 0.5px;
             padding: 0.25rem 0.8rem;
             border-radius: 50px;
@@ -915,14 +915,14 @@
     <header class="catalog-header">
         <h1>
             <i class="fas fa-book-open"></i>
-            Catálogo de Recursos
+            Catálogo de recursos
         </h1>
         <div class="actions">
             <a href="{% url 'recursos_digitales:crear_original' %}" class="btn btn-primary">
-                <i class="fas fa-pen-fancy"></i> Crear Original
+                <i class="fas fa-pen-fancy"></i> Crear original
             </a>
             <a href="{% url 'recursos_digitales:crear_externo' %}" class="btn btn-outline">
-                <i class="fas fa-link"></i> Registrar Externo
+                <i class="fas fa-link"></i> Registrar externo
             </a>
         </div>
     </header>

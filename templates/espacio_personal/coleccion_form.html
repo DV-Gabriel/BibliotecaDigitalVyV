@@ -463,14 +463,14 @@
             </a>
             <span class="separator">/</span>
             <a href="{% url 'espacio_personal:coleccion_lista' %}">
-                Mis Colecciones
+                Mis colecciones
             </a>
             <span class="separator">/</span>
             <span class="current">
                 {% if form.instance.pk %}
                     Editar: {{ form.instance.nombre|truncatechars:30 }}
                 {% else %}
-                    Nueva Colección
+                    Nueva colección
                 {% endif %}
             </span>
         </nav>
@@ -485,7 +485,7 @@
                     {% if form.instance.pk %}
                         Editar Colección
                     {% else %}
-                        Crear Nueva Colección
+                        Crear nueva colección
                     {% endif %}
                 </h1>
                 <p>
@@ -578,9 +578,9 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="fas {% if form.instance.pk %}fa-save{% else %}fa-plus{% endif %}"></i>
                     {% if form.instance.pk %}
-                        Actualizar Colección
+                        Actualizar colección
                     {% else %}
-                        Crear Colección
+                        Crear colección
                     {% endif %}
                 </button>
             </div>

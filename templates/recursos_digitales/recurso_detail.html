@@ -207,7 +207,7 @@
             border-radius: 50px;
             font-size: 0.7rem;
             font-weight: 700;
-            text-transform: uppercase;
+            text-transform: none;
             letter-spacing: 0.5px;
             border: 2px solid transparent;
         }
@@ -258,7 +258,7 @@
         .detail-body .section-title {
             font-size: 0.8rem;
             font-weight: 700;
-            text-transform: uppercase;
+            text-transform: none;
             letter-spacing: 0.8px;
             color: var(--color-secondary);
             margin-bottom: 0.8rem;
@@ -347,7 +347,7 @@
         .detail-body .meta-item .label {
             font-size: 0.7rem;
             font-weight: 700;
-            text-transform: uppercase;
+            text-transform: none;
             letter-spacing: 0.5px;
             color: var(--color-secondary);
         }
@@ -603,7 +603,7 @@
             font-size: 0.7rem;
             color: var(--color-secondary);
             font-weight: 600;
-            text-transform: uppercase;
+            text-transform: none;
             letter-spacing: 0.5px;
         }
 
@@ -988,7 +988,7 @@
             <!-- Anotaciones (si está autenticado) -->
             {% if user.is_authenticated %}
                 <a href="{% url 'espacio_personal:anotaciones' recurso.pk %}" class="btn btn-outline">
-                    <i class="fas fa-sticky-note"></i> Mis Anotaciones
+                    <i class="fas fa-sticky-note"></i> Mis anotaciones
                     <span class="badge"
                           style="background: var(--color-tertiary); color: white; padding: 0.1rem 0.5rem; border-radius: 50px; font-size: 0.7rem; margin-left: 0.3rem;">
             {{ recurso.anotaciones.count }}
