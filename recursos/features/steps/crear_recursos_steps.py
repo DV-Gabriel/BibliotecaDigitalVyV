@@ -58,7 +58,7 @@ def step_check_similarity(context, usuario, nivel_similitud, recurso_ref):
     context.usuario_actual = user
 
 
-@then('el sistema "<resultado>" advertir a {usuario} sobre el recurso "{recurso_ref}" como posible similar')
+@then('el sistema "{resultado}" advertir a {usuario} sobre el recurso "{recurso_ref}" como posible similar')
 def step_verify_similarity_warning(context, resultado, usuario, recurso_ref):
     """Verifica si se muestra advertencia de similitud."""
     if resultado == 'debe':
@@ -72,6 +72,7 @@ def step_verify_similarity_warning(context, resultado, usuario, recurso_ref):
 
 
 @given('existe otro recurso "{titulo}", creado por "{usuario}", con contenido significativamente similar al de "{recurso_ref}"')
+@given('que existe otro recurso "{titulo}", creado por "{usuario}", con contenido significativamente similar al de "{recurso_ref}"')
 def step_create_similar_resource(context, titulo, usuario, recurso_ref):
     """Crea un recurso con contenido similar."""
     user = context.usuarios.get(usuario)

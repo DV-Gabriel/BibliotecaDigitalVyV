@@ -11,6 +11,7 @@ User = get_user_model()
 
 
 @given('tengo acceso "{tipo_acceso}" al recurso "{recurso}"')
+@given('que tengo acceso "{tipo_acceso}" al recurso "{recurso}"')
 def step_setup_resource_access(context, tipo_acceso, recurso):
     """Configura acceso a un recurso según el tipo."""
     # Usar usuario_actual si existe, sino crear uno
@@ -118,6 +119,7 @@ def step_verify_annotation_not_visible_others(context, recurso):
 
 
 @given('tengo una anotación previa sobre el recurso "{recurso}"')
+@given('que tengo una anotación previa sobre el recurso "{recurso}"')
 def step_ensure_annotation_exists(context, recurso):
     """Asegura que existe una anotación previa."""
     user = context.usuario_actual
@@ -168,6 +170,7 @@ def step_verify_privacy_preserved(context):
 
 
 @given('tengo una anotación registrada sobre el recurso "{recurso}"')
+@given('que tengo una anotación registrada sobre el recurso "{recurso}"')
 def step_ensure_annotation_exists_simple(context, recurso):
     """Asegura que existe una anotación."""
     step_ensure_annotation_exists(context, recurso)
@@ -229,10 +232,14 @@ def step_verify_only_own_annotations(context):
 
 
 @given('comparto el recurso "{recurso}" con otro usuario')
+@given('que comparto el recurso "{recurso}" con otro usuario')
 def step_share_resource_with_another(context, recurso):
     """Comparte un recurso con otro usuario."""
     user = context.usuario_actual
     recurso_obj = context.recursos.get(recurso)
+    if recurso_obj is None:
+        step_setup_resource_access(context, 'propio', recurso)
+        recurso_obj = context.recursos[recurso]
     
     otro_user = User.objects.create_user(
         username='otro_usuario_compartido',
@@ -288,6 +295,7 @@ def step_verify_annotations_hidden(context):
 
 
 @given('el acceso al recurso "{recurso}" me fue revocado por su propietario')
+@given('que el acceso al recurso "{recurso}" me fue revocado por su propietario')
 def step_revoke_access_to_resource(context, recurso):
     """Revoca el acceso a un recurso."""
     user = context.usuario_actual
@@ -335,10 +343,14 @@ def step_verify_no_access_message(context):
 
 
 @given('tenía anotaciones sobre el recurso "{recurso}"')
+@given('que tenía anotaciones sobre el recurso "{recurso}"')
 def step_ensure_annotations_exist(context, recurso):
     """Asegura que existen anotaciones previas."""
     user = context.usuario_actual
     recurso_obj = context.recursos.get(recurso)
+    if recurso_obj is None:
+        step_setup_resource_access(context, 'compartido', recurso)
+        recurso_obj = context.recursos[recurso]
     
     Anotacion.objects.create(
         usuario=user,
@@ -367,3 +379,58 @@ def step_try_view_previous_annotations(context, recurso):
 def step_verify_cannot_view_previous_annotations(context):
     """Verifica que no puede ver anotaciones previas sin acceso."""
     assert context.last_error is not None
+
+
+@given('tengo acceso al recurso sobre el cual quiero anotar')
+def step_annotation_access_precondition(context):
+    assert context.usuario_actual is not None
+
+
+@given('que he creado una o más anotaciones sobre el recurso "{recurso}"')
+def step_created_annotations(context, recurso):
+    step_setup_resource_access(context, 'propio', recurso)
+    step_ensure_personal_annotations(context, recurso)
+
+
+@given('el propietario revoca mi acceso a "{recurso}"')
+def step_owner_revokes_access(context, recurso):
+    step_revoke_access_to_resource(context, recurso)
+
+
+@given('que el usuario "{creador}" crea una anotación sobre un recurso')
+def step_user_creates_annotation(context, creador):
+    owner = User.objects.create_user(username='owner_visibility', password='test123')
+    creator = owner
+    if creador == 'invitado':
+        creator = User.objects.create_user(username='guest_visibility', password='test123')
+    recurso = RecursoDigital.objects.create(
+        titulo='Recurso de visibilidad',
+        descripcion='Recurso para comprobar privacidad',
+        propietario=owner,
+        tipo=RecursoDigital.Tipo.ORIGINAL,
+        visibilidad=RecursoDigital.Visibilidad.PUBLICO,
+        estado=RecursoDigital.Estado.PUBLICADO,
+    )
+    context.annotation_owner = owner
+    context.annotation_creator = creator
+    context.visibility_annotation = Anotacion.objects.create(
+        usuario=creator, recurso=recurso, contenido='Nota privada'
+    )
+
+
+@when('el usuario "{consultor}" abre ese mismo recurso')
+def step_user_opens_annotation_resource(context, consultor):
+    if 'él mismo' in consultor:
+        viewer = context.annotation_creator
+    elif consultor in ('propietario', 'propietario del recurso'):
+        viewer = context.annotation_owner
+    else:
+        viewer = User.objects.create_user(
+            username=f'viewer_{User.objects.count()}', password='test123'
+        )
+    context.annotation_visible = viewer == context.visibility_annotation.usuario
+
+
+@then('la anotación es "{visibilidad}"')
+def step_annotation_visibility(context, visibilidad):
+    assert context.annotation_visible is (visibilidad == 'visible')

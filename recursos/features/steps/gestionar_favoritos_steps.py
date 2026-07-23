@@ -43,6 +43,7 @@ def step_mark_as_favorite(context):
 
 
 @given('existe un recurso de tipo "{tipo_recurso}"')
+@given('que existe un recurso de tipo "{tipo_recurso}"')
 def step_create_resource_by_type(context, tipo_recurso):
     """Crea un recurso según su tipo."""
     user = context.usuario_actual
@@ -112,17 +113,29 @@ def step_verify_action_result(context, resultado):
 
 
 @given('el recurso "{titulo}" está en mi lista de favoritos')
+@given('que el recurso "{titulo}" está en mi lista de favoritos')
 def step_ensure_resource_is_favorite(context, titulo):
     """Asegura que un recurso es favorito."""
     user = context.usuario_actual
     recurso = context.recursos.get(titulo)
     
     if not recurso:
+        propietario = User.objects.create_user(
+            username='propietario_r2', password='test123'
+        )
         recurso = RecursoDigital.objects.create(
             titulo=titulo,
             descripcion='Descripción',
-            propietario=user,
+            propietario=propietario,
             tipo=RecursoDigital.Tipo.ORIGINAL,
+            visibilidad=RecursoDigital.Visibilidad.PRIVADO,
+            estado=RecursoDigital.Estado.PUBLICADO,
+        )
+        CompartidoCon.objects.create(
+            recurso=recurso,
+            usuario=user,
+            compartido_por=propietario,
+            activo=True,
         )
         context.recursos[titulo] = recurso
     

@@ -11,7 +11,13 @@ User = get_user_model()
 @given('que existen los usuarios "{nombres}"')
 def step_create_multiple_users(context, nombres):
     """Crea múltiples usuarios separados por comas."""
-    user_list = [n.strip().strip('"') for n in nombres.split(',')]
+    # El parámetro llega como: Ana", "Luis" y "Marta. Separar tanto comas
+    # como la conjunción final; el split anterior registraba una sola clave
+    # literal `Luis" y "Marta` y luego los demás steps recibían None.
+    user_list = [
+        n.strip()
+        for n in nombres.replace('"', '').replace(' y ', ',').split(',')
+    ]
     context.usuarios = {}
     for name in user_list:
         try:
@@ -28,7 +34,7 @@ def step_create_multiple_users(context, nombres):
 @given('que soy un usuario autenticado en el sistema')
 def step_authenticate_user(context):
     """Autentica al usuario actual."""
-    if not hasattr(context, 'usuario_actual'):
+    if not getattr(context, 'usuario_actual', None):
         user = User.objects.create_user(
             username='usuario_test',
             password='test123',
@@ -63,6 +69,7 @@ def step_authenticate_specific_user(context, nombre):
 
 
 @given('existe el usuario "{nombre}"')
+@given('que existe el usuario "{nombre}"')
 def step_ensure_user_exists(context, nombre):
     """Asegura que existe un usuario."""
     try:
@@ -83,7 +90,7 @@ def step_user_has_access(context, nombre, titulo):
     """Verifica que un usuario tiene acceso a un recurso."""
     usuario = context.usuarios.get(nombre)
     assert usuario is not None, f"Usuario {nombre} no existe"
-    
+
     recurso = RecursoDigital.objects.get(titulo=titulo)
     # Verificar acceso mediante la queryset visibles_para
     recursos_visibles = RecursoDigital.objects.visibles_para(usuario)
@@ -95,7 +102,7 @@ def step_user_no_access(context, nombre, titulo):
     """Verifica que un usuario NO tiene acceso a un recurso."""
     usuario = context.usuarios.get(nombre)
     assert usuario is not None, f"Usuario {nombre} no existe"
-    
+
     recurso = RecursoDigital.objects.get(titulo=titulo)
     recursos_visibles = RecursoDigital.objects.visibles_para(usuario)
     assert recurso not in recursos_visibles, f"{nombre} tiene acceso inesperado a {titulo}"

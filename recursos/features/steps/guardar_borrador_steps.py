@@ -67,6 +67,7 @@ def step_draft_not_in_catalog(context):
 
 
 @given('el recurso "{titulo}" quedó guardado como borrador con el contenido que {usuario} había ingresado')
+@given('que el recurso "{titulo}" quedó guardado como borrador con el contenido que {usuario} había ingresado')
 def step_setup_draft_resource(context, titulo, usuario):
     """Configura un recurso en borrador."""
     user = context.usuarios.get(usuario)
@@ -117,7 +118,7 @@ def step_ensure_draft_exists(context, usuario, titulo):
 
 
 
-@given('que {usuario} completa título, descripción, categoría y al menos una etiqueta')
+@given('{usuario} completa título, descripción, categoría y al menos una etiqueta')
 def step_complete_draft_fields(context, usuario, titulo=None):
     """Completa los campos obligatorios de un borrador."""
     user = context.usuarios.get(usuario)
@@ -197,11 +198,16 @@ def step_setup_incomplete_draft(context, usuario, titulo, campo):
     
     if campo == 'categoría':
         recurso.categoria = None
+    else:
+        recurso.categoria, _ = Categoria.objects.get_or_create(nombre='General')
     
     recurso.save()
     
     if campo == 'etiquetas':
         recurso.etiquetas.clear()
+    else:
+        etiqueta, _ = Etiqueta.objects.get_or_create(nombre='completa')
+        recurso.etiquetas.add(etiqueta)
     
     if not hasattr(context, 'recursos'):
         context.recursos = {}
@@ -225,3 +231,23 @@ def step_try_publish_incomplete(context, usuario, titulo):
     except ValueError as e:
         context.last_error = e
         context.last_error_message = str(e)
+
+
+@when('{usuario} intenta consultar el recurso "{titulo}"')
+def step_other_user_consults_draft(context, usuario, titulo):
+    user = context.usuarios.get(usuario)
+    if user is None:
+        user = User.objects.create_user(
+            username=usuario.lower(), password='test123', first_name=usuario
+        )
+        context.usuarios[usuario] = user
+    recurso = context.recursos[titulo]
+    if recurso not in RecursoDigital.objects.visibles_para(user):
+        context.last_error = PermissionError('No tiene acceso al borrador')
+    else:
+        context.last_error = None
+
+
+@then('el sistema debe impedir la publicación')
+def step_publication_prevented(context):
+    assert context.last_error is not None

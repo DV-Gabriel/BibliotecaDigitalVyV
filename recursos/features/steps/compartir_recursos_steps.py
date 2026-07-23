@@ -42,7 +42,10 @@ def step_share_resource(context, titulo, propietario, receptores):
     propietario_user = context.usuarios.get(propietario)
     recurso = context.recursos.get(titulo)
     
-    receptor_list = [r.strip() for r in receptores.replace(' y ', ',').split(',')]
+    receptor_list = [
+        r.strip().removeprefix('con ')
+        for r in receptores.replace(' y ', ',').split(',')
+    ]
     
     for receptor_name in receptor_list:
         receptor = context.usuarios.get(receptor_name)
@@ -72,13 +75,22 @@ def step_user_shares_resource(context, usuario, titulo, receptores):
     user = context.usuarios.get(usuario)
     recurso = context.recursos.get(titulo)
     
-    receptor_list = [r.strip() for r in receptores.replace(' y ', ',').split(',')]
+    receptor_list = [
+        r.strip().removeprefix('con ')
+        for r in receptores.replace(' y ', ',').split(',')
+    ]
     
     try:
         # Verificar que es propietario
         if recurso.propietario != user:
             context.last_error = PermissionError("Solo el propietario puede compartir")
             context.last_error_message = "solo el propietario puede compartir el recurso"
+            return
+        if recurso.estado != RecursoDigital.Estado.PUBLICADO:
+            context.last_error = ValueError(
+                "El recurso debe completarse y publicarse antes de compartirse"
+            )
+            context.last_error_message = str(context.last_error)
             return
         
         for receptor_name in receptor_list:
@@ -107,6 +119,15 @@ def step_user_shares_resource(context, usuario, titulo, receptores):
 def step_user_try_share_resource(context, usuario, titulo, receptor):
     """Un usuario intenta compartir un recurso (puede fallar)."""
     step_user_shares_resource(context, usuario, titulo, receptor)
+
+
+@when('{usuario} intenta compartir "{titulo}" nuevamente con {receptor}')
+def step_user_reshare_resource(context, usuario, titulo, receptor):
+    step_user_shares_resource(context, usuario, titulo, receptor)
+    context.shared_access_count = CompartidoCon.objects.filter(
+        recurso=context.recursos[titulo],
+        usuario=context.usuarios[receptor],
+    ).count()
 
 
 @when('{usuario} revoca el acceso de {receptor} a "{titulo}"')
@@ -181,4 +202,23 @@ def step_resource_in_shared_list(context, usuario):
 @then('Ana debe seguir teniendo acceso al recurso')
 def step_verify_still_has_access(context):
     """Verifica que Ana sigue teniendo acceso."""
-    step_user_has_access(context, 'Ana', list(context.recursos.keys())[-1])
+    recurso = list(context.recursos.values())[-1]
+    assert recurso in RecursoDigital.objects.visibles_para(context.usuarios['Ana'])
+
+
+@then('{usuario} ya no debe tener acceso al recurso "{titulo}"')
+def step_verify_revoked_user_has_no_access(context, usuario, titulo):
+    recurso = context.recursos[titulo]
+    assert recurso not in RecursoDigital.objects.visibles_para(
+        context.usuarios[usuario]
+    )
+
+
+@then('el sistema no debe duplicar el acceso')
+def step_verify_no_duplicate_access(context):
+    assert context.shared_access_count == 1
+
+
+@then('el sistema no debe generar ningún cambio')
+def step_verify_no_change(context):
+    assert context.last_error is None

@@ -6,15 +6,21 @@ hooks para setup/teardown de la base de datos y fixtures.
 """
 import os
 import django
+from django.apps import apps
 from django.conf import settings
+from django.core.management import call_command
 from django.test import Client
 from django.test.utils import get_runner
 
-# Asegurar que DJANGO_SETTINGS_MODULE esté definido antes de que se importen
-# los módulos de steps que acceden a modelos. Esto se ejecuta al importar
-# este archivo (antes de la carga de los step modules por behave).
+# Evita doble inicialización de Django. Si el runner que lanza behave
+# (p. ej. el plugin de Behave de PyCharm) ya llamó a django.setup(),
+# no lo repetimos: hacerlo de nuevo puede re-ejecutar los módulos
+# 'models.py' de cada app y duplicar el registro de modelos, lo que
+# deja el ORM en un estado inconsistente (ej. FieldError raro en
+# lookups como 'exact').
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BibliotecaDigital.settings')
-django.setup()
+if not apps.ready:
+    django.setup()
 
 
 def before_all(context):
@@ -36,6 +42,11 @@ def after_all(context):
 
 def before_scenario(context, scenario):
     """Se ejecuta antes de cada escenario."""
+    # Behave no hereda el aislamiento transaccional de TestCase. Como la base
+    # se crea una sola vez en before_all, hay que vaciarla explícitamente para
+    # que los datos de un escenario no colisionen con los del siguiente.
+    call_command('flush', verbosity=0, interactive=False)
+
     # Test client de Django: lo usan los steps de autenticación
     # (context.client.force_login(user)).
     context.client = Client()

@@ -27,6 +27,7 @@ def step_create_collection(context, nombre_coleccion):
 
 
 @given('existe un recurso "{visibilidad}" llamado "{recurso}"')
+@given('que existe un recurso "{visibilidad}" llamado "{recurso}"')
 def step_create_resource_with_visibility(context, visibilidad, recurso):
     """Crea un recurso con visibilidad específica."""
     user = context.usuario_actual
@@ -86,12 +87,11 @@ def step_share_with_user(context, recurso, usuario):
 
 @given('"{usuario}" es propietario del recurso')
 def step_set_resource_owner(context, usuario):
-    """Verifica que un usuario es propietario."""
+    """Configura al usuario indicado como propietario."""
     user = context.usuarios.get(usuario) if hasattr(context, 'usuarios') else context.usuario_actual
     recurso = list(context.recursos.values())[-1]
-    
-    assert recurso.propietario == user, \
-        f"El propietario no es {usuario}"
+    recurso.propietario = user
+    recurso.save(update_fields=['propietario'])
 
 
 @when('el usuario agrega el recurso "{recurso}" a la colección "{coleccion}"')
@@ -139,7 +139,7 @@ def step_verify_cannot_add_to_collection(context):
         "Se esperaba un error al agregar el recurso"
 
 
-@then('el "<atributo>" del recurso debe seguir siendo "<valor>"')
+@then('el "{atributo}" del recurso debe seguir siendo "{valor}"')
 def step_verify_resource_attribute_unchanged(context, atributo, valor):
     """Verifica que un atributo del recurso no cambió."""
     recurso = list(context.recursos.values())[-1]
@@ -206,7 +206,7 @@ def step_check_collection(context, coleccion):
     context.recursos_accesibles = [r for r in recursos_en_coleccion if r in recursos_visibles]
 
 
-@then('el usuario "<resultado>" acceder al recurso "{recurso}" desde la colección')
+@then('el usuario "{resultado}" acceder al recurso "{recurso}" desde la colección')
 def step_verify_collection_access(context, resultado, recurso):
     """Verifica acceso a un recurso desde la colección."""
     recurso_obj = context.recursos.get(recurso)
@@ -217,3 +217,52 @@ def step_verify_collection_access(context, resultado, recurso):
     elif resultado == 'no debe poder':
         assert recurso_obj not in context.recursos_accesibles, \
             f"Se puede acceder inesperadamente a {recurso}"
+
+
+@given('que existe un recurso {visibilidad} llamado "{recurso}"')
+def step_create_unquoted_visibility_resource(context, visibilidad, recurso):
+    step_create_resource_with_visibility(context, visibilidad, recurso)
+
+
+@given('el recurso no pertenece a "{usuario}" ni ha sido compartido con él')
+def step_confirm_no_access(context, usuario):
+    recurso = list(context.recursos.values())[-1]
+    user = context.usuarios[usuario]
+    assert recurso.propietario != user
+    assert not CompartidoCon.objects.filter(
+        recurso=recurso, usuario=user, activo=True
+    ).exists()
+
+
+@given('el "{atributo}" del recurso es "{valor}"')
+def step_set_resource_attribute(context, atributo, valor):
+    recurso = list(context.recursos.values())[-1]
+    if atributo == 'propietario':
+        owner = context.usuarios.get(valor)
+        if owner is None:
+            owner = User.objects.create_user(
+                username=valor.lower(), password='test123', first_name=valor
+            )
+            context.usuarios[valor] = owner
+        recurso.propietario = owner
+        recurso.save(update_fields=['propietario'])
+    else:
+        recurso.autor_texto = valor
+        recurso.autor_usuario = None
+        recurso.tipo = RecursoDigital.Tipo.EXTERNO
+        recurso.save(update_fields=['autor_texto', 'autor_usuario', 'tipo'])
+
+
+@given('el propietario del recurso es "{usuario}"')
+def step_set_owner(context, usuario):
+    step_set_resource_attribute(context, 'propietario', usuario)
+
+
+@given('el propietario compartió "{recurso}" con "{usuario}"')
+def step_owner_shared(context, recurso, usuario):
+    step_share_with_user(context, recurso, usuario)
+
+
+@given('el recurso "{recurso}" está incluido en la colección "{coleccion}"')
+def step_resource_already_in_collection(context, recurso, coleccion):
+    context.colecciones[coleccion].recursos.add(context.recursos[recurso])

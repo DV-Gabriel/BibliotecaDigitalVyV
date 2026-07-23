@@ -11,7 +11,7 @@ Característica: Organizar recursos en colecciones personales
 
   Esquema del escenario: Agregar a una colección un recurso al que se tiene acceso
     Dado que existe un recurso "<visibilidad>" llamado "<recurso>"
-    Y "<condicion_acceso>"
+      Y <condicion_acceso>
     Cuando el usuario agrega el recurso "<recurso>" a la colección "Biología"
     Entonces el recurso debe quedar incluido en la colección "Biología"
 

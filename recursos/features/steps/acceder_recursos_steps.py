@@ -45,6 +45,15 @@ def step_create_public_resource(context, titulo, usuario):
 
 @given('que "{titulo}" fue compartido por {propietario} con {usuario}')
 def step_given_resource_shared(context, titulo, propietario, usuario):
+    receptores = [
+        nombre.strip().removeprefix('con ')
+        for nombre in usuario.replace(' y ', ',').split(',')
+    ]
+    if len(receptores) > 1:
+        for receptor in receptores:
+            step_given_resource_shared(context, titulo, propietario, receptor)
+        return
+
     """Crea la relación de recurso compartido en la base de datos."""
     if not hasattr(context, 'usuarios'):
         context.usuarios = {}
@@ -88,7 +97,10 @@ def step_given_resource_shared(context, titulo, propietario, usuario):
     CompartidoCon.objects.get_or_create(
         recurso=recurso,
         usuario=user_dest,
-        defaults={'activo': True}
+        defaults={
+            'compartido_por': user_prop,
+            'activo': True,
+        }
     )
 
 

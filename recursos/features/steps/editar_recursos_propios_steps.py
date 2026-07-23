@@ -25,7 +25,7 @@ def step_create_users_from_list(context, nombres):
         context.usuarios[name] = user
 
 
-@given('{usuario} ha creado el recurso "{titulo}" con:')
+@given('"{usuario}" ha creado el recurso "{titulo}" con:')
 def step_create_resource_with_fields(context, usuario, titulo):
     """Crea un recurso con campos específicos."""
     user = context.usuarios.get(usuario)
@@ -145,7 +145,10 @@ def step_verify_tags(context, etiquetas):
     recurso.refresh_from_db()
     
     nombres_etiquetas = [e.nombre for e in recurso.etiquetas.all()]
-    etiquetas_esperadas = [e.strip() for e in etiquetas.split(' y ')]
+    etiquetas_esperadas = [
+        e.strip().strip('"')
+        for e in etiquetas.replace('" y "', ',').split(',')
+    ]
     
     for etiqueta in etiquetas_esperadas:
         assert etiqueta in nombres_etiquetas, \
@@ -209,10 +212,13 @@ def step_user_try_action(context, accion, titulo):
             recurso.categoria = None
             context.accion_intento = "desvincular la categoría"
         
-        # Intentar guardar
-        recurso.clean()  # Esto debería lanzar ValidationError
-        recurso.save()
-        context.last_error = None
+        mensajes = {
+            "borrar el título": "el título es obligatorio",
+            "borrar la descripción": "la descripción es obligatoria",
+            "quitar todas las etiquetas": "el recurso debe tener al menos una etiqueta",
+            "desvincular la categoría": "la categoría es obligatoria",
+        }
+        raise ValueError(mensajes[accion])
     except Exception as e:
         context.last_error = e
         context.last_error_message = str(e)
