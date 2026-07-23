@@ -97,13 +97,13 @@ behave recursos/features/
 ### Ejecutar una feature específica
 
 ```bash
-behave recursos/features/Compartir_recursos.feature
+behave recursos/features/compartir_recursos.feature
 ```
 
 ### Ejecutar un escenario específico
 
 ```bash
-behave recursos/features/Compartir_recursos.feature -n "El propietario comparte"
+behave recursos/features/compartir_recursos.feature -n "El propietario comparte"
 ```
 
 ### Con más verbosidad
