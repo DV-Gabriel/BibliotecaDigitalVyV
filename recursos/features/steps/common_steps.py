@@ -50,7 +50,7 @@ def step_authenticate_user(context):
 
 @given('el usuario "{nombre}" está autenticado en el sistema')
 def step_authenticate_specific_user(context, nombre):
-    """Autentica un usuario específico."""
+    """Auténtica un usuario específico."""
     try:
         user = User.objects.get(username=nombre.lower())
     except User.DoesNotExist:
@@ -66,7 +66,6 @@ def step_authenticate_specific_user(context, nombre):
     # Antes: context.usuarios.force_login(user) -> 'usuarios' es un dict,
     # no tiene force_login. El login va contra el test client.
     context.client.force_login(user)
-
 
 @given('existe el usuario "{nombre}"')
 @given('que existe el usuario "{nombre}"')
